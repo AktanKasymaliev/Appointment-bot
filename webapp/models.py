@@ -114,9 +114,6 @@ class Settlement(models.Model):
     
     amount = models.PositiveIntegerField(verbose_name='Amount')
 
-    def __str__(self) -> str:
-        return f'{self.applicant.firstname}'
-
     class Meta:
         verbose_name = 'Settlement'
         verbose_name_plural = 'Settlements'
