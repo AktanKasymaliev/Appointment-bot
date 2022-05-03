@@ -62,6 +62,7 @@ class Applicant(models.Model):
     contact_number = models.CharField(verbose_name='Phone number', max_length=20)
     passport = models.CharField(verbose_name='Personal number of passport', unique=True, max_length=20)
 
+    settlement = models.ForeignKey('Settlement', verbose_name='To settlement', on_delete=models.CASCADE)
     email_account = models.OneToOneField(EmailAccount, on_delete=models.CASCADE) 
     vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE)
 
@@ -97,10 +98,10 @@ class CrawlAttempt(models.Model):
             )
     modified_at = models.DateTimeField(verbose_name='Modified at')
     modified_by = models.DateTimeField(verbose_name='Modified by')
-    applicants = models.ForeignKey(Applicant, verbose_name='To applicant', on_delete=models.CASCADE)
+    applicant = models.ForeignKey(Applicant, verbose_name='To applicant', on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'{self.applicants.firstname}'
+        return f'{self.applicant.firstname}'
 
     class Meta:
         verbose_name = 'Crawl attempt'
@@ -111,14 +112,11 @@ class Settlement(models.Model):
     modified_at = models.DateTimeField(verbose_name='Modified at')
     modified_by = models.DateTimeField(verbose_name='Modified by')
     
-    applicants = models.ForeignKey(Applicant, verbose_name='To applicant', on_delete=models.CASCADE) 
     amount = models.PositiveIntegerField(verbose_name='Amount')
 
     def __str__(self) -> str:
-        return f'{self.applicants.firstname}'
+        return f'{self.applicant.firstname}'
 
     class Meta:
         verbose_name = 'Settlement'
         verbose_name_plural = 'Settlements'
-
-        

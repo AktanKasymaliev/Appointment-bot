@@ -1,7 +1,6 @@
 
 venv/
 .vscode/
-migrations
 /.env/
 .env/
 /.idea
