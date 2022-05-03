@@ -1,11 +1,13 @@
-import models
-
+from .models import (
+    Appointment, Applicant, Card, EmailAccount,
+    VFSAccount, CrawlAttempt, Settlement
+                    )
 from django.contrib import admin
 
-admin.site.register(models.Applicant)
-admin.site.register(models.Card)
-admin.site.register(models.Appointment)
-admin.site.register(models.EmailAccount)
-admin.site.register(models.VFSAccount)
-admin.site.register(models.Settlement)
-admin.site.register(models.CrawlAttempt)
+admin.site.register(Applicant)
+admin.site.register(Card)
+admin.site.register(Appointment)
+admin.site.register(EmailAccount)
+admin.site.register(VFSAccount)
+admin.site.register(Settlement)
+admin.site.register(CrawlAttempt)

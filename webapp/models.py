@@ -16,8 +16,8 @@ class Card(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Карта'
-        verbose_name_plural = 'Карты' 
+        verbose_name = 'Кредитная карта'
+        verbose_name_plural = 'Кредитные карты' 
 
 class EmailAccount(models.Model):
     created_at = models.DateTimeField(verbose_name='Создан в', auto_now_add=True)
@@ -57,9 +57,9 @@ class Applicant(models.Model):
     lastname = models.CharField(verbose_name='Фамилия', max_length=100)
     gender = models.CharField(verbose_name='Пол', max_length=10)
     date_of_birth = models.DateField(verbose_name='Дата рождения')
-    citizenship = models.CharField(verbose_name='Гражданство')
-    contact_number = models.CharField(verbose_name='Телефонный номер')
-    passport = models.CharField(verbose_name='Персональный номер', unique=True)
+    citizenship = models.CharField(verbose_name='Гражданство', max_length=100)
+    contact_number = models.CharField(verbose_name='Телефонный номер', max_length=20)
+    passport = models.CharField(verbose_name='Персональный номер', unique=True, max_length=20)
 
     email_account = models.OneToOneField(EmailAccount, on_delete=models.CASCADE) 
     vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE)
@@ -78,15 +78,15 @@ class Appointment(models.Model):
 
     is_success = models.BooleanField(verbose_name='Успешность')
     applicant = models.ForeignKey(Applicant, verbose_name='Апликант', on_delete=models.CASCADE)
-    center_name = models.CharField(verbose_name='Агенство') 
+    center_name = models.CharField(verbose_name='Агенство', max_length=100) 
     date_and_time = models.DateTimeField(verbose_name='Время назначения')
 
     def __str__(self) -> str:
         return f'{self.firstname} {self.lastname}'
 
     class Meta:
-        verbose_name = 'Апликант'
-        verbose_name_plural = 'Апликанты'
+        verbose_name = 'Запись на прием'
+        verbose_name_plural = 'Записи на прием'
 
 class CrawlAttempt(models.Model):
     crawl_type = models.CharField(verbose_name='Переползать в', max_length=25, choices=[(tag, tag.value) for tag in CrawlTypes])
@@ -98,8 +98,8 @@ class CrawlAttempt(models.Model):
         return f'{self.applicants.firstname}'
 
     class Meta:
-        verbose_name = 'Апликант'
-        verbose_name_plural = 'Апликанты'
+        verbose_name = 'Попытка серфинга'
+        verbose_name_plural = 'Попытки серфинга'
 
 class Settlement(models.Model):
     created_at = models.DateTimeField(verbose_name='Создан в', auto_now_add=True)
@@ -113,7 +113,7 @@ class Settlement(models.Model):
         return f'{self.applicants.firstname}'
 
     class Meta:
-        verbose_name = 'Апликант'
-        verbose_name_plural = 'Апликанты'
+        verbose_name = 'Поселение'
+        verbose_name_plural = 'Поселения'
 
         
