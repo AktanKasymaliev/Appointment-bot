@@ -3,7 +3,7 @@
 import os
 import sys
 
-from configurations import config
+from config.configurations import config
 
 
 def main():
