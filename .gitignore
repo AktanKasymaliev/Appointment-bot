@@ -1,3 +1,23 @@
+
+venv/
+.vscode/
+/.env/
+.env/
+/.idea
+.idea/
+*.pyc/
+# Django #
+*.log
+*.pot
+*.pyc
+pycache
+db.sqlite3
+media
+__pycache__/
+# Backup files #
+*.bak
+settings.ini
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -25,6 +45,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
