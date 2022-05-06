@@ -24,3 +24,4 @@ def config() -> None:
     #SYSTEM
     os.environ.setdefault("DJANGO_DEBUG", load_conf(config_parse, SYSTEM, "DEBUG", "False"))
     os.environ.setdefault("DJANGO_KEY", load_conf(config_parse, SYSTEM, "DJANGO_KEY", "root"))
+    os.environ.setdefault("ANYCAPTCHA_KEY", load_conf(config_parse, SYSTEM, "ANYCAPTCHA_KEY", None))

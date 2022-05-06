@@ -1,6 +1,7 @@
 [SYSTEM]
 DJANGO_KEY=django_key
 DEBUG=True
+ANYCAPTCHA_KEY=exampleKey_6312g3fh12t3y1t23...
 
 [DATABASE]
 PASSWORD=example_password123

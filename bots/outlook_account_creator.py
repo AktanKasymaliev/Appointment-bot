@@ -8,20 +8,21 @@ from random import choice
 
 from faker import Faker
 
-from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
+import undetected_chromedriver as uc
 from anycaptcha import AnycaptchaClient, FunCaptchaProxylessTask
 from bots.abstract_bot import AbstractBot
+from config.settings import BASE_DIR
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 
-API_2_CAPTCHA = "41abcc2148244c49816ba8a310a20080"
-# API_2_CAPTCHA = "f187b261dde3df74ab649c397c362f76"
+API_2_CAPTCHA = os.environ.get("ANYCAPTCHA_KEY")
 
 class Proxies:
     proxy_list = []
@@ -48,7 +49,7 @@ class Proxies:
 
 
 
-class OutlookAccountCreatorFirefox(AbstractBot):
+class OutlookAccountCreator(AbstractBot):
     """ Class for creating outlook.com account
     with randomly generated details"""
     URL = 'https://signup.live.com/signup'
@@ -71,50 +72,48 @@ class OutlookAccountCreatorFirefox(AbstractBot):
         person = self.__generate_random_details()
         birth_date = person['dob']
 
-        # Enter Email
-        ActionChains(self.driver) \
-            .send_keys_to_element(self.driver.find_element(By.ID, 'MemberName'), person['username']) \
-            .send_keys(Keys.ENTER).pause(3).perform()
-        # Enter Password
-        ActionChains(self.driver) \
-            .send_keys_to_element(self.driver.find_element(By.ID, 'PasswordInput'), person['password']) \
-            .send_keys(Keys.ENTER).pause(3).perform()
-        # Enter First and Last Name
-        ActionChains(self.driver) \
-            .send_keys_to_element(self.driver.find_element(By.ID, 'FirstName'), person['first_name']) \
-            .send_keys_to_element(self.driver.find_element(By.ID, 'LastName'), person['last_name']) \
-            .send_keys(Keys.ENTER).pause(3).perform()
-
-        # Enter Country and DOB
-        self.driver.find_element(By.XPATH, f'//option[@value="{person["country"]}"]').click()
-        WebDriverWait(self.driver, 1
-                            ).until(
-                                EC.element_to_be_clickable((By.XPATH, '//*[@id="BirthYear"]'))
-                                ).send_keys(birth_date.year)
-        sleep(1)
-
-        birthD = Select(self.driver.find_element(By.ID, "BirthDay"))
-        birthD.select_by_visible_text(str(birth_date.day))
-        sleep(1)
-
-        month_select = self.driver.find_element(By.XPATH, '//*[@id="BirthMonth"]')
-        month_select.find_element(By.XPATH, f'//*[@value="{birth_date.month}"]').click()
-        sleep(1)
-
-        self.driver.find_element(By.ID, 'iSignupAction').click()
-        sleep(10)
-        #TODO: 
-        # 2 бота готово осталось запустить этот
-        # Solve Captcha
         try:
+            # Enter Email
+            ActionChains(self.driver) \
+                .send_keys_to_element(self.driver.find_element(By.ID, 'MemberName'), person['username']) \
+                .send_keys(Keys.ENTER).pause(3).perform()
+            # Enter Password
+            ActionChains(self.driver) \
+                .send_keys_to_element(self.driver.find_element(By.ID, 'PasswordInput'), person['password']) \
+                .send_keys(Keys.ENTER).pause(4).perform()
+            # Enter First and Last Name
+            ActionChains(self.driver) \
+                .send_keys_to_element(self.driver.find_element(By.ID, 'FirstName'), person['first_name']) \
+                .send_keys_to_element(self.driver.find_element(By.ID, 'LastName'), person['last_name']) \
+                .send_keys(Keys.ENTER).pause(3).perform()
+
+            # Enter Country and DOB
+            self.driver.find_element(By.XPATH, f'//option[@value="{person["country"]}"]').click()
+            WebDriverWait(self.driver, 1
+                                ).until(
+                                    EC.element_to_be_clickable((By.XPATH, '//*[@id="BirthYear"]'))
+                                    ).send_keys(birth_date.year)
+            sleep(1)
+
+            birthD = Select(self.driver.find_element(By.ID, "BirthDay"))
+            birthD.select_by_visible_text(str(birth_date.day))
+            sleep(1)
+
+            month_select = self.driver.find_element(By.XPATH, '//*[@id="BirthMonth"]')
+            month_select.find_element(By.XPATH, f'//*[@value="{birth_date.month}"]').click()
+            sleep(1)
+
+            self.driver.find_element(By.ID, 'iSignupAction').click()
+            sleep(5)
+            # Solve Captcha
+        
             WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="enforcementFrame"]')))
             WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="fc-iframe-wrap"]')))
             WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="CaptchaFrame"]')))
             WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, "home_children_button"))).click()
             sleep(3)
-        except Exception as e:
-            print(e)
-            # Retry if something went wrong
+
+        except:
             print('Failed while creating account...\nRetrying...')
             return self.work()
 
@@ -122,18 +121,18 @@ class OutlookAccountCreatorFirefox(AbstractBot):
         src = self.driver.find_element(By.ID, "enforcementFrame").get_attribute('src')
         pk = [i for i in src.split('/') if i.startswith("B7D")][-1]
         solution = self.__solve_captcha(pk)
-        
 
         js_script = f"""
-            var anyCaptchaToken = '{solution}';
-            var enc = document.getElementById('enforcementFrame');
-            var encWin = enc.contentWindow || enc;
-            var encDoc = enc.contentDocument || encWin.document;
-            let script = encDoc.createElement('SCRIPT');
-            script.append('function AnyCaptchaSubmit(token) {{ parent.postMessage(JSON.stringify({{ eventId: "challenge-complete", payload: {{ sessionToken: token }} }}), "*") }}');
-            encDoc.documentElement.appendChild(script);
-            encWin.AnyCaptchaSubmit(anyCaptchaToken);
-            """
+                    var anyCaptchaToken = '{solution}';
+                    var enc = document.getElementById('enforcementFrame');
+                    var encWin = enc.contentWindow || enc;
+                    var encDoc = enc.contentDocument || encWin.document;
+                    let script = encDoc.createElement('SCRIPT');
+                    script.append('function AnyCaptchaSubmit(token) {{ parent.postMessage(JSON.stringify({{ eventId: "challenge-complete", payload: {{ sessionToken: token }} }}), "*") }}');
+                    encDoc.documentElement.appendChild(script);
+                    encWin.AnyCaptchaSubmit(anyCaptchaToken);
+                    """
+
         self.driver.execute_script(js_script)
 
         sleep(10)
@@ -155,6 +154,7 @@ class OutlookAccountCreatorFirefox(AbstractBot):
             return person
         return None
 
+
     @staticmethod
     def __generate_random_details():
         """
@@ -163,8 +163,8 @@ class OutlookAccountCreatorFirefox(AbstractBot):
         """
         fake_details = Faker()
         name = fake_details.name()
-        username = OutlookAccountCreatorFirefox.__create_username(name)
-        password = OutlookAccountCreatorFirefox.__generate_password()
+        username = OutlookAccountCreator.__create_username(name)
+        password = OutlookAccountCreator.__generate_password()
         first, last = name.split(' ', 1)
 
         while True:
@@ -222,26 +222,30 @@ class OutlookAccountCreatorFirefox(AbstractBot):
             job = client.createTask(solver, typecaptcha="funcaptcha")
             job.join()
             solution = job.get_solution_response()
-            print(solution)
-            print(f"Captcha solved (solution: {solution})...")
+
+            print(f"Captcha solved!")
             return solution
+
         except Exception as e:
+            print('Failed to solve captcha...\nRetrying')
             print(e)
-            print('Failed to solve captcha...')
+            sleep(5.5)
+            return self.__solve_captcha(pk)
+            
 
     @staticmethod
     def __open_browser(use_proxy: bool = False):
         # TODO: add user agent, handle errors(password, capthca unsolved), if user already was created
-        driver = webdriver.Firefox(
-        service=Service(executable_path="/home/aktan/projects/appointment-bot/geckodriver")
-                )
+        options = uc.ChromeOptions()
+        options.add_argument("--disable-web-security")
+        options.add_argument("--disable-site-isolation-trials")
+        options.add_argument("--disable-application-cache")
+        
+        # driver_path = os.path.join(BASE_DIR, 'chromedriver')
+
+        driver = uc.Chrome(
+                            service=Service(ChromeDriverManager().install()), 
+                            options=options
+                            )
         driver.maximize_window()
         return driver
-
-
-if __name__ == '__main__':
-    # Proxies.load_proxies('proxies.txt')
-    # Initialize account creator class
-    account_creator = OutlookAccountCreatorFirefox(use_proxy=True)
-    # Run account creator
-    account_creator.work()
