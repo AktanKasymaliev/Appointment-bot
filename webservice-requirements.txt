@@ -1,7 +1,7 @@
 # Anycaptcha dependencies
 six==1.16.0
 requests==2.27.1
-git+ssh://git@github.com/anycaptcha/anycaptcha-python.git
+git+https://github.com/anycaptcha/anycaptcha-python.git
 
 Django==4.0.4
 Faker==13.7.0
