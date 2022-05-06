@@ -1,8 +1,11 @@
--e git+https://github.com/AktanKasymaliev/Appointment-telegram-bot.git@23225968d41ecc54acf811c3981bbb344b99fab5#egg=anycaptcha
+# Anycaptcha dependencies
+six==1.16.0
+requests==2.27.1
+git+https://github.com/anycaptcha/anycaptcha-python.git
+
 Django==4.0.4
 Faker==13.7.0
 psycopg2-binary==2.9.3
-requests==2.27.1
 selenium==4.1.3
 undetected-chromedriver==3.1.5.post4
 webdriver-manager==3.5.4
