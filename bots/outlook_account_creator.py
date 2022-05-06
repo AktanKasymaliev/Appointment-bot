@@ -4,7 +4,7 @@ import secrets
 import string
 from time import sleep
 from pprint import pprint
-from random import choice
+import zipfile
 
 from faker import Faker
 
@@ -16,37 +16,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import undetected_chromedriver as uc
 from anycaptcha import AnycaptchaClient, FunCaptchaProxylessTask
-from bots.abstract_bot import AbstractBot
-from config.settings import BASE_DIR
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+from bots.bot_managing import AbstractBot, Proxies
+from bots.proxy import manifest_json, background_js, plugin_file
 
 API_2_CAPTCHA = os.environ.get("ANYCAPTCHA_KEY")
-
-class Proxies:
-    proxy_list = []
-
-    @staticmethod
-    def load_proxies(file_path: str):
-        """
-        Reads a text file with proxies
-        :param file_path: Path to proxy file with proxies in <user>:<pas>@<ip>:<port> format each on one line
-        """
-        lst = []
-        if file_path:
-            if os.path.exists(file_path):
-                with open(file_path, 'r') as file:
-                    lst = [x for x in file.read().split('\n') if x.strip()]
-            else:
-                print('File: {}. Does not exist.'.format(file_path))
-        Proxies.proxy_list = lst
-
-    @staticmethod
-    def get_random_proxy():
-        """ Returns a random proxy """
-        return choice(Proxies.proxy_list)
-
 
 
 class OutlookAccountCreator(AbstractBot):
@@ -105,18 +81,17 @@ class OutlookAccountCreator(AbstractBot):
 
             self.driver.find_element(By.ID, 'iSignupAction').click()
             sleep(5)
-            # Solve Captcha
-        
+
             WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="enforcementFrame"]')))
             WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="fc-iframe-wrap"]')))
             WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="CaptchaFrame"]')))
             WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, "home_children_button"))).click()
             sleep(3)
-
         except:
             print('Failed while creating account...\nRetrying...')
             return self.work()
 
+        # Solve Captcha
         self.driver.switch_to.default_content()
         src = self.driver.find_element(By.ID, "enforcementFrame").get_attribute('src')
         pk = [i for i in src.split('/') if i.startswith("B7D")][-1]
@@ -193,10 +168,10 @@ class OutlookAccountCreator(AbstractBot):
         :param name: string with person name
         :return: string with username based on the name
         """
-        return name.replace(' ', '').lower() + str(random.randint(1000, 10000))
+        return name.replace(' ', '').lower() + str(random.randint(100, 100000))
 
     @staticmethod
-    def __generate_password():
+    def __generate_password() -> str:
         """
         generates password 10 char long, with at least one number and symbol
         :return: string with new password
@@ -205,11 +180,11 @@ class OutlookAccountCreator(AbstractBot):
         password = ''.join(secrets.choice(alphabet) for i in range(8))
         return password + random.choice('$#@!%^') + random.choice('0123456789')
 
-    def __solve_captcha(self, pk: str):
+    def __solve_captcha(self, pk: str) -> str:
         """
         downloads captcha image and send to 2captcha to solve
-        :param captcha_url: Captcha image url
-        :return: string with captcha solution
+        :param pk: Site key of url
+        :return: token(str) with captcha solution
         """
         try:
             print('Solving Captcha...')
@@ -227,25 +202,38 @@ class OutlookAccountCreator(AbstractBot):
             return solution
 
         except Exception as e:
-            print('Failed to solve captcha...\nRetrying')
-            print(e)
+            print('Failed to solve captcha...\nRetrying to solve')
             sleep(5.5)
             return self.__solve_captcha(pk)
-            
+        
+    @staticmethod
+    def __make_proxy() -> zipfile.ZipFile:
+        random_proxy = Proxies.get_random_proxy()
+        auth, ip_port = random_proxy.split('@')
+        user, pwd = auth.split(':')
+        ip, port = ip_port.split(':')
+
+        with zipfile.ZipFile(plugin_file, 'w') as zp:
+            zp.writestr("manifest.json", manifest_json)
+            zp.writestr("background.js", background_js % (ip, port, user, pwd))
+        return plugin_file
 
     @staticmethod
     def __open_browser(use_proxy: bool = False):
-        # TODO: add user agent, handle errors(password, capthca unsolved), if user already was created
+        # TODO: add user agent, if user already was created
         options = uc.ChromeOptions()
+        if use_proxy:
+            plugin_file = OutlookAccountCreator.__make_proxy()
+            options.add_extension(plugin_file)
+
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
         options.add_argument("--disable-application-cache")
         
-        # driver_path = os.path.join(BASE_DIR, 'chromedriver')
-
         driver = uc.Chrome(
                             service=Service(ChromeDriverManager().install()), 
                             options=options
                             )
+
         driver.maximize_window()
         return driver
