@@ -2,6 +2,8 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any
 from random import choice
+import zipfile
+from bots.proxy import plugin_file, manifest_json, background_js
 
 class Proxies:
     proxy_list = []
@@ -25,6 +27,19 @@ class Proxies:
     def get_random_proxy():
         """ Returns a random proxy """
         return choice(Proxies.proxy_list)
+
+    @staticmethod
+    def make_proxy() -> zipfile.ZipFile:
+        random_proxy = Proxies.get_random_proxy()
+        # 1 variant
+        auth, ip_port = random_proxy.split('@')
+        user, pwd = auth.split(':')
+        ip, port = ip_port.split(':')
+
+        with zipfile.ZipFile(plugin_file, 'w') as zp:
+            zp.writestr("manifest.json", manifest_json)
+            zp.writestr("background.js", background_js % (ip, port, user, pwd))
+        return plugin_file
 
 
 class AbstractBot(ABC):

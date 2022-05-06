@@ -4,9 +4,9 @@ import secrets
 import string
 from time import sleep
 from pprint import pprint
-import zipfile
 
 from faker import Faker
+import undetected_chromedriver as uc
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
@@ -14,13 +14,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
-import undetected_chromedriver as uc
 from anycaptcha import AnycaptchaClient, FunCaptchaProxylessTask
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 from bots.bot_managing import AbstractBot, Proxies
-from bots.proxy import manifest_json, background_js, plugin_file
 
 API_2_CAPTCHA = os.environ.get("ANYCAPTCHA_KEY")
 
@@ -205,25 +203,13 @@ class OutlookAccountCreator(AbstractBot):
             print('Failed to solve captcha...\nRetrying to solve')
             sleep(5.5)
             return self.__solve_captcha(pk)
-        
-    @staticmethod
-    def __make_proxy() -> zipfile.ZipFile:
-        random_proxy = Proxies.get_random_proxy()
-        auth, ip_port = random_proxy.split('@')
-        user, pwd = auth.split(':')
-        ip, port = ip_port.split(':')
-
-        with zipfile.ZipFile(plugin_file, 'w') as zp:
-            zp.writestr("manifest.json", manifest_json)
-            zp.writestr("background.js", background_js % (ip, port, user, pwd))
-        return plugin_file
 
     @staticmethod
     def __open_browser(use_proxy: bool = False):
         # TODO: add user agent, if user already was created
         options = uc.ChromeOptions()
         if use_proxy:
-            plugin_file = OutlookAccountCreator.__make_proxy()
+            plugin_file = Proxies.make_proxy()
             options.add_extension(plugin_file)
 
         options.add_argument("--disable-web-security")
