@@ -1,24 +1,23 @@
-
 manifest_json = """
-    {
-        "version": "1.0.0",
-        "manifest_version": 3,
-        "name": "Chrome Proxy",
-        "permissions": [
-            "Proxy",
-            "Tabs",
-            "unlimitedStorage",
-            "Storage",
-            "<all_urls>",
-            "webRequest",
-            "webRequestBlocking"
-        ],
+{
+    "version": "1.0.0",
+    "manifest_version": 2,
+    "name": "Chrome Proxy",
+    "permissions": [
+        "proxy",
+        "tabs",
+        "unlimitedStorage",
+        "storage",
+        "<all_urls>",
+        "webRequest",
+        "webRequestBlocking"
+    ],
     "background": {
         "scripts": ["background.js"]
     },
-        "Minimum_chrome_version":"76.0.0"
-    }
-        """
+    "minimum_chrome_version":"22.0.0"
+}
+"""
 
 background_js = """
         var config = {

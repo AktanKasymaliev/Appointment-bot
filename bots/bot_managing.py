@@ -1,9 +1,12 @@
 import os
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractstaticmethod
 from typing import Any
 from random import choice
 import zipfile
+
 from bots.proxy import plugin_file, manifest_json, background_js
+
+import undetected_chromedriver as uc
 
 class Proxies:
     proxy_list = []
@@ -24,7 +27,7 @@ class Proxies:
         Proxies.proxy_list = lst
 
     @staticmethod
-    def get_random_proxy():
+    def get_random_proxy() -> str:
         """ Returns a random proxy """
         return choice(Proxies.proxy_list)
 
@@ -32,9 +35,13 @@ class Proxies:
     def make_proxy() -> zipfile.ZipFile:
         random_proxy = Proxies.get_random_proxy()
         # 1 variant
-        auth, ip_port = random_proxy.split('@')
-        user, pwd = auth.split(':')
-        ip, port = ip_port.split(':')
+        # auth, ip_port = random_proxy.split('@')
+        # user, pwd = auth.split(':')
+        # ip, port = ip_port.split(':')
+
+        # # 2 variant
+        user, pwd = "mix101JHHZLNC", "Aetoldv"
+        ip, port = random_proxy.split(':') 
 
         with zipfile.ZipFile(plugin_file, 'w') as zp:
             zp.writestr("manifest.json", manifest_json)
@@ -46,8 +53,20 @@ class AbstractBot(ABC):
 
     @abstractmethod
     def work(self) -> Any: 
+        """
+        Main method for start worker of this bot
+        """
         pass
 
     @abstractmethod
-    def generate_report(self) -> Any: 
+    def generate_report(self) -> Any:
+        """
+        Method that returns final conclusion of work
+        """ 
+        pass
+
+    def __open_browser(use_proxy: bool = False) -> uc.Chrome:
+        """
+        Method for open your chrome browser
+        """
         pass

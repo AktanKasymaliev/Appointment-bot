@@ -1,13 +1,13 @@
 from django.core.management.base import BaseCommand
 from bots.bot_managing import Proxies
-from bots.outlook_account_creator import OutlookAccountCreator
+from bots.vfs_account_creator import VFSAccountCreate
 
 class Command(BaseCommand):
     help = 'Start email creator bot'
 
     def handle(self, *args, **options):
         # Proxies.load_proxies('proxies.txt')
-        bot = OutlookAccountCreator(use_proxy=False)
+        bot = VFSAccountCreate(use_proxy=False)
         bot.work()
 
     def add_arguments(self, parser) -> None:
@@ -16,5 +16,5 @@ class Command(BaseCommand):
             default=None,
             required=True,
             type=int,
-            help='Start email creator bot',
+            help='Start vfs creator bot',
         )
