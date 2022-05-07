@@ -1,17 +1,17 @@
 from django.core.management.base import BaseCommand
-from bots.vfs_account_creator import VFSAccountCreate
+from bots.vfs_account_login import VFSLoginBot
 
 class Command(BaseCommand):
     help = 'Start email creator bot'
 
     def handle(self, *args, **options):
         # Proxies.load_proxies('proxies.txt')
-        vfs_bot = VFSAccountCreate(
+        bot = VFSLoginBot(
             email='outlook@outlook.com',
-            password='password1234',
+            password='password',
             use_proxy=False
-            )
-        vfs_bot.work()
+        )
+        bot.work()
 
     def add_arguments(self, parser) -> None:
         parser.add_argument (
