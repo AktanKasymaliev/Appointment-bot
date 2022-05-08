@@ -1,12 +1,9 @@
 from time import sleep
 from typing import Any
 
-import undetected_chromedriver as uc
-from bots.bot_managing import Bot, Proxies
+from bots.bot_managing import Bot
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 class VFSAccountCreate(Bot):
     URL = "https://visa.vfsglobal.com/tur/en/pol/register"

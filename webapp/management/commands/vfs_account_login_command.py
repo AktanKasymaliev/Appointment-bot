@@ -5,11 +5,10 @@ class Command(BaseCommand):
     help = 'Start email creator bot'
 
     def handle(self, *args, **options):
-        # Proxies.load_proxies('proxies.txt')
         bot = VFSLoginBot(
             email='outlook@outlook.com',
             password='password',
-            use_proxy=False
+            use_proxy=True
         )
         bot.work()
 
@@ -19,5 +18,5 @@ class Command(BaseCommand):
             default=None,
             required=True,
             type=int,
-            help='Start vfs creator bot',
+            help='Start vfs login bot',
         )

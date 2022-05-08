@@ -1,4 +1,5 @@
 from time import sleep
+from typing import Any
 
 from selenium.webdriver.common.by import By
 
@@ -47,3 +48,6 @@ class OutlookCheckerMailBot(Bot):
     def work(self):
         self.login()
         self.choose_vfs_verification_mail_and_click()
+    
+    def generate_report(self) -> Any:
+        return super().generate_report()

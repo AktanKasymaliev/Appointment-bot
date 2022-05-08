@@ -1,55 +1,29 @@
-import os
 from abc import ABC, abstractmethod
 from typing import Any
-from random import choice
-import zipfile
 
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
+from selenium_stealth import stealth
 
-from bots.proxy import plugin_file, manifest_json, background_js
+from bots.proxy_details import manifest_json, background_js
+from config.settings import BASE_DIR
 
+class Proxie:
 
-class Proxies:
-    proxy_list = []
-
-    @staticmethod
-    def load_proxies(file_path: str):
-        """
-        Reads a text file with proxies
-        :param file_path: Path to proxy file with proxies in <user>:<pas>@<ip>:<port> format each on one line
-        """
-        lst = []
-        if file_path:
-            if os.path.exists(file_path):
-                with open(file_path, 'r') as file:
-                    lst = [x for x in file.read().split('\n') if x.strip()]
-            else:
-                print('File: {}. Does not exist.'.format(file_path))
-        Proxies.proxy_list = lst
+    @property
+    def give_the_path(self) -> str:
+        return str(BASE_DIR) + '/bots/proxy/'
 
     @staticmethod
-    def get_random_proxy() -> str:
-        """ Returns a random proxy """
-        return choice(Proxies.proxy_list)
+    def make_proxy() -> None:
+        path = Proxie().give_the_path
+        
+        with open(path + 'background.js', 'w') as f:
+            f.write(background_js)
 
-    @staticmethod
-    def make_proxy() -> zipfile.ZipFile:
-        random_proxy = Proxies.get_random_proxy()
-        # 1 variant
-        # auth, ip_port = random_proxy.split('@')
-        # user, pwd = auth.split(':')
-        # ip, port = ip_port.split(':')
-
-        # # 2 variant
-        user, pwd = "mix101JHHZLNC", "Aetoldv"
-        ip, port = random_proxy.split(':') 
-
-        with zipfile.ZipFile(plugin_file, 'w') as zp:
-            zp.writestr("manifest.json", manifest_json)
-            zp.writestr("background.js", background_js % (ip, port, user, pwd))
-        return plugin_file
+        with open(path + 'manifest.json', 'w') as f:
+            f.write(manifest_json)
 
 
 class Bot(ABC):
@@ -78,8 +52,9 @@ class Bot(ABC):
         """
         options = uc.ChromeOptions()
         if use_proxy:
-            plugin_file = Proxies.make_proxy()
-            options.add_extension(plugin_file)
+            proxy = Proxie()
+            proxy.make_proxy()
+            options.add_argument('--load-extension={}'.format(proxy.give_the_path))
 
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
@@ -89,6 +64,17 @@ class Bot(ABC):
                             service=Service(ChromeDriverManager().install()), 
                             options=options
                             )
+
+        # Make your driver more secretive
+        stealth(driver,
+                languages=["en-US", "en"],
+                vendor="Google Inc.",
+                platform="Win32",
+                webgl_vendor="Intel Inc.",
+                renderer="Intel Iris OpenGL Engine",
+                fix_hairline=True,
+                )
+                
         driver.maximize_window()
         driver.implicitly_wait(10)
 

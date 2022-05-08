@@ -1,3 +1,11 @@
+import os
+
+USERNAME = os.environ.get("PROXY_USERNAME")
+PASSWORD = os.environ.get("PROXY_PASSWORD")
+HOST = os.environ.get("PROXY_HOST")
+PORT = int(os.environ.get("PROXY_PORT"))
+
+
 manifest_json = """
 {
     "version": "1.0.0",
@@ -26,7 +34,7 @@ background_js = """
                   singleProxy: {
                     scheme: "http",
                     host: "%s",
-                    port: parseInt(%s)
+                    port: %s
                   },
                   bypassList: ["localhost"]
                 }
@@ -45,6 +53,4 @@ background_js = """
                     {urls: ["<all_urls>"]},
                     ['blocking']
         );
-        """
-
-plugin_file = 'bots/proxy_auth_plugin.zip'
+        """ % (HOST, PORT, USERNAME, PASSWORD)
