@@ -11,10 +11,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 class VFSAccountCreate(Bot):
     URL = "https://visa.vfsglobal.com/tur/en/pol/register"
 
-    def __init__(self, email: str, password: str, use_proxy: bool = False) -> None:
+    def __init__(self, email: str, password: str,  use_proxy: bool = False) -> None:
+        super().__init__(use_proxy)
         self.email = email
         self.password = password
-        self.driver = self.create_driver(use_proxy)
 
     def work(self) -> Any:
         data = {} # For collecting user credentials

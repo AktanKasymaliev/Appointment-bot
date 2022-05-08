@@ -27,7 +27,7 @@ class OutlookAccountCreator(Bot):
     SURL = 'https://client-api.arkoselabs.com'
 
     def __init__(self, use_proxy: bool = False):
-        self.driver = self.create_driver(use_proxy)
+        super().__init__(use_proxy=use_proxy)
 
     def work(self):
         """

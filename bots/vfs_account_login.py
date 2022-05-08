@@ -9,8 +9,8 @@ class VFSLoginBot(Bot):
 
     URL = "https://visa.vfsglobal.com/tur/en/pol/login"
 
-    def __init__(self, email: str, password: str, use_proxy: bool = True,) -> None:
-        self.driver = self.create_driver(use_proxy)
+    def __init__(self, email: str, password: str,  use_proxy: bool = False) -> None:
+        super().__init__(use_proxy)
         self.email = email
         self.password = password
 

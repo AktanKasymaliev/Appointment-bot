@@ -54,6 +54,9 @@ class Proxies:
 
 class Bot(ABC):
 
+    def __init__(self, use_proxy: bool = False) -> None:
+        self.driver = self.create_driver(use_proxy)
+
     @abstractmethod
     def work(self) -> Any: 
         """
