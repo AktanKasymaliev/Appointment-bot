@@ -26,9 +26,6 @@ class OutlookAccountCreator(Bot):
     URL = 'https://signup.live.com/signup'
     SURL = 'https://client-api.arkoselabs.com'
 
-    def __init__(self, use_proxy: bool = False):
-        super().__init__(use_proxy=use_proxy)
-
     def work(self):
         """
         Goes through website process of creating the account
