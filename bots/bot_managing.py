@@ -1,12 +1,15 @@
 import os
-from abc import ABC, abstractmethod, abstractstaticmethod
+from abc import ABC, abstractmethod
 from typing import Any
 from random import choice
 import zipfile
 
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+import undetected_chromedriver as uc
+
 from bots.proxy import plugin_file, manifest_json, background_js
 
-import undetected_chromedriver as uc
 
 class Proxies:
     proxy_list = []
@@ -49,7 +52,10 @@ class Proxies:
         return plugin_file
 
 
-class AbstractBot(ABC):
+class Bot(ABC):
+
+    def __init__(self, use_proxy: bool = False) -> None:
+        self.driver = self.create_driver(use_proxy)
 
     @abstractmethod
     def work(self) -> Any: 
@@ -65,8 +71,25 @@ class AbstractBot(ABC):
         """ 
         pass
 
-    def __open_browser(use_proxy: bool = False) -> uc.Chrome:
+    @staticmethod
+    def create_driver(use_proxy: bool = False) -> uc.Chrome:
         """
         Method for open your chrome browser
         """
-        pass
+        options = uc.ChromeOptions()
+        if use_proxy:
+            plugin_file = Proxies.make_proxy()
+            options.add_extension(plugin_file)
+
+        options.add_argument("--disable-web-security")
+        options.add_argument("--disable-site-isolation-trials")
+        options.add_argument("--disable-application-cache")
+
+        driver = uc.Chrome(
+                            service=Service(ChromeDriverManager().install()), 
+                            options=options
+                            )
+        driver.maximize_window()
+        driver.implicitly_wait(10)
+
+        return driver

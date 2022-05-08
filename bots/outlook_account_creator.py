@@ -6,7 +6,6 @@ from time import sleep
 from pprint import pprint
 
 from faker import Faker
-import undetected_chromedriver as uc
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
@@ -15,22 +14,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from anycaptcha import AnycaptchaClient, FunCaptchaProxylessTask
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
-from bots.bot_managing import AbstractBot, Proxies
+from bots.bot_managing import Bot
 
 API_2_CAPTCHA = os.environ.get("ANYCAPTCHA_KEY")
 
 
-class OutlookAccountCreator(AbstractBot):
+class OutlookAccountCreator(Bot):
     """ Class for creating outlook.com account
     with randomly generated details"""
     URL = 'https://signup.live.com/signup'
     SURL = 'https://client-api.arkoselabs.com'
-
-    def __init__(self, use_proxy: bool = False):
-        self.driver = self.__open_browser(use_proxy)
 
     def work(self):
         """
@@ -203,23 +197,3 @@ class OutlookAccountCreator(AbstractBot):
             print('Failed to solve captcha...\nRetrying to solve')
             sleep(5.5)
             return self.__solve_captcha(pk)
-
-    @staticmethod
-    def __open_browser(use_proxy: bool = False):
-        # TODO: add user agent, if user already was created
-        options = uc.ChromeOptions()
-        if use_proxy:
-            plugin_file = Proxies.make_proxy()
-            options.add_extension(plugin_file)
-
-        options.add_argument("--disable-web-security")
-        options.add_argument("--disable-site-isolation-trials")
-        options.add_argument("--disable-application-cache")
-        
-        driver = uc.Chrome(
-                            service=Service(ChromeDriverManager().install()), 
-                            options=options
-                            )
-
-        driver.maximize_window()
-        return driver
