@@ -18,7 +18,7 @@ class VFSLoginBot(Bot):
 
     def work(self):
         self.driver.get(self.URL)
-        sleep(5)
+        sleep(10)
         try:
             self.driver.find_element(By.ID, 'mat-input-0').send_keys(self.email)
             sleep(2)
