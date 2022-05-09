@@ -32,8 +32,8 @@ class OutlookAccountCreator(Bot):
         Goes through website process of creating the account
         :return: dictionary with login information for the account
         """
-        print('Creating new Outlook email account')
         self.driver.get(self.URL)
+        print('Creating new Outlook email account')
         sleep(2)
         self.driver.find_element(By.ID, 'liveSwitch').click()
         sleep(2)
