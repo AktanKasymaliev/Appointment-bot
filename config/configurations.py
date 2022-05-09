@@ -13,7 +13,6 @@ def config() -> None:
     config_parse.read("settings.ini")
     DATABASE = "DATABASE"
     SYSTEM = "SYSTEM"
-    PROXY = "PROXY"
 
     #DATABASE
     os.environ.setdefault("DATABASE_NAME", load_conf(config_parse, DATABASE, "NAME", "db"))
