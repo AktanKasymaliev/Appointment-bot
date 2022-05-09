@@ -33,7 +33,6 @@ class OutlookAccountCreator(Bot):
         :return: dictionary with login information for the account
         """
         self.driver.get(self.URL)
-        print('Creating new Outlook email account')
         sleep(2)
         self.driver.find_element(By.ID, 'liveSwitch').click()
         sleep(2)
@@ -108,6 +107,7 @@ class OutlookAccountCreator(Bot):
         report = self.generate_report(person)
         if report != None:
             self.driver.close()
+            print('=========Mail created!=========')
             return report
 
         print('Failed to create account...')
