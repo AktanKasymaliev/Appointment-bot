@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'Start email creator bot'
+    help = 'Start email checker bot'
 
     def handle(self, *args, **options):
         bot = OutlookCheckerMailBot(

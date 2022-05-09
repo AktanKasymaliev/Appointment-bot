@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from bots.vfs_account_creator import VFSAccountCreate
 
 class Command(BaseCommand):
-    help = 'Start email creator bot'
+    help = 'Start vfs creator bot'
 
     def handle(self, *args, **options):
         vfs_bot = VFSAccountCreate(

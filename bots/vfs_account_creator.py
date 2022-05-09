@@ -16,19 +16,19 @@ class VFSAccountCreate(Bot):
     def work(self) -> Any:
         data = {} # For collecting user credentials
         self.driver.get(self.URL)
-        print("Creating User")
-        sleep(5)
+        print("=========Creating VFS User=========")
+        sleep(6)
         try:
             self.driver.find_element(By.ID, "mat-input-0").send_keys(self.email)
-            sleep(1)
+            sleep(2)
             self.driver.find_element(By.ID, "mat-input-1").send_keys(self.password)
-            sleep(1)
+            sleep(2)
             self.driver.find_element(By.ID, "mat-input-2").send_keys(self.password)
-            sleep(1)
+            sleep(2)
 
             self.driver.find_element(By.CLASS_NAME, 'mat-checkbox-layout').click()
             self.driver.find_element(By.CLASS_NAME, 'mat-btn-lg').click()
-            sleep(2)
+            sleep(3)
             self.generate_report(data)
             sleep(15)
             self.driver.close()

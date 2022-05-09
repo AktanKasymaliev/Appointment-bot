@@ -76,7 +76,7 @@ class Bot(ABC):
             proxy.make_proxy()
             options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
 
-        options.add_argument("start-maximized")
+        # options.add_argument("start-maximized")
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
         options.add_argument("--disable-application-cache")

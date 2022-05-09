@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from bots.bot_managing import Bot
 
 class OutlookCheckerMailBot(Bot):
-    URl = 'https://outlook.office.com/mail/'
+    URL = 'https://outlook.office.com/mail/'
 
     def __init__(self, email: str, password: str,  use_proxy: bool = False) -> None:
         super().__init__(use_proxy)
@@ -19,29 +19,30 @@ class OutlookCheckerMailBot(Bot):
         with you are given credentials
         """
         self.driver.get(self.URL)
-        sleep(4)
+        print("=========Checking Outlook User\'s Mail=========")
+        sleep(5)
         try:
             self.driver.find_element(By.ID, 'i0116').send_keys(self.email)
-            sleep(2)
+            sleep(3)
             self.driver.find_element(By.ID, 'idSIButton9').click()
-            sleep(2)
+            sleep(3)
             self.driver.find_element(By.ID, 'i0118').send_keys(self.password)
-            sleep(2)
+            sleep(3)
             self.driver.find_element(By.ID, 'idSIButton9').click()
             sleep(3)
             self.driver.find_element(By.ID, 'idBtn_Back').click()
-            sleep(5)
+            sleep(15)
         except:
             print("Email or password was given incorrect!")
 
     def choose_vfs_verification_mail_and_click(self):
         try:
             self.driver.find_element(By.XPATH, "//span[text()='Other']").click()
-            sleep(2)
+            sleep(3)
             self.driver.find_element(By.XPATH, "//span[text()='donotreply@vfsglobal.com']").click()
-            sleep(2)
+            sleep(3)
             self.driver.find_element(By.XPATH, "//a[text()='ActivateAccount']").click()
-            sleep(5)
+            sleep(6)
         except:
             print('The mail from VFS wasn\'t found!')
 
