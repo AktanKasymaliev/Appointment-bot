@@ -17,6 +17,7 @@ __pycache__/
 # Backup files #
 *.bak
 settings.ini
+bot_settings.ini
 proxies.txt
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -22,7 +22,8 @@ API_2_CAPTCHA = os.environ.get("ANYCAPTCHA_KEY")
 
 class OutlookAccountCreator(Bot):
     """ Class for creating outlook.com account
-    with randomly generated details"""
+        with randomly generated details  """
+
     URL = 'https://signup.live.com/signup'
     SURL = 'https://client-api.arkoselabs.com'
 
@@ -106,6 +107,7 @@ class OutlookAccountCreator(Bot):
 
         report = self.generate_report(person)
         if report != None:
+            self.driver.close()
             return report
 
         print('Failed to create account...')
@@ -169,8 +171,8 @@ class OutlookAccountCreator(Bot):
         :return: string with new password
         """
         alphabet = string.ascii_letters + string.digits
-        password = ''.join(secrets.choice(alphabet) for i in range(8))
-        return password + random.choice('$#@!%^') + random.choice('0123456789')
+        password = ''.join(secrets.choice(alphabet) for i in range(9))
+        return password + random.choice('$#@!') + random.choice('0123456789') + random.choice('QWERTYUIOPLKJH')
 
     def __solve_captcha(self, pk: str) -> str:
         """

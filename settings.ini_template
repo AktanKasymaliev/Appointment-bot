@@ -9,9 +9,3 @@ USER=example_user
 NAME=example_db 
 HOST=example_localhost 
 PORT=example_5432
-
-[PROXY]
-PROXY_USERNAME=example_user
-PROXY_PASSWORD=example_password123
-PROXY_HOST=example_localhost
-PROXY_PORT=example_1111

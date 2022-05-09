@@ -1,32 +1,50 @@
+import os
 from abc import ABC, abstractmethod
 from typing import Any
+from configparser import ConfigParser
 
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 from selenium_stealth import stealth
 
-from bots.proxy_details import manifest_json, background_js
-from config.settings import BASE_DIR
+from bots.constants import manifest_json, background_js
+from bots.bot_configurations import  load_conf
 
 class Proxie:
 
-    @property
-    def give_the_path(self) -> str:
-        return str(BASE_DIR) + '/bots/proxy/'
+    def __init__(self, username: str, password: str, host: str, port: int) -> None:
+        self.USERNAME = username
+        self.PASSWORD = password
+        self.HOST = host
+        self.PORT = port 
 
-    @staticmethod
-    def make_proxy() -> None:
-        path = Proxie().give_the_path
-        
+    def give_the_path(self) -> str:
+        return os.getcwd() + '/bots/proxy/'
+
+    def make_proxy(self) -> None:
+        path = self.give_the_path()
+
         with open(path + 'background.js', 'w') as f:
-            f.write(background_js)
+            f.write(background_js % (
+                self.HOST, self.PORT, 
+                self.USERNAME, self.PASSWORD
+                    )
+                )
 
         with open(path + 'manifest.json', 'w') as f:
             f.write(manifest_json)
 
 
 class Bot(ABC):
+    CONFIG_PARSE = ConfigParser()
+    CONFIG_PARSE.read("bot_settings.ini")
+    PROXY = "PROXY"
+
+    USERNAME = load_conf(CONFIG_PARSE, PROXY, "PROXY_USERNAME")
+    PASSWORD = load_conf(CONFIG_PARSE, PROXY, "PROXY_PASSWORD")
+    HOST = load_conf(CONFIG_PARSE, PROXY, "PROXY_HOST")
+    PORT = int(load_conf(CONFIG_PARSE, PROXY, "PROXY_PORT"))
 
     def __init__(self, use_proxy: bool = False) -> None:
         self.driver = self.create_driver(use_proxy)
@@ -44,17 +62,19 @@ class Bot(ABC):
         Method that returns final conclusion of work
         """ 
         pass
-
-    @staticmethod
-    def create_driver(use_proxy: bool = False) -> uc.Chrome:
+    
+    def create_driver(self, use_proxy: bool = False) -> uc.Chrome:
         """
         Method for open your chrome browser
         """
         options = uc.ChromeOptions()
         if use_proxy:
-            proxy = Proxie()
+            proxy = Proxie(
+                self.USERNAME, self.PASSWORD,
+                self.HOST, self.PORT
+                )
             proxy.make_proxy()
-            options.add_argument('--load-extension={}'.format(proxy.give_the_path))
+            options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
 
         options.add_argument("start-maximized")
         options.add_argument("--disable-web-security")

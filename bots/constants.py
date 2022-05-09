@@ -1,11 +1,3 @@
-import os
-
-USERNAME = os.environ.get("PROXY_USERNAME")
-PASSWORD = os.environ.get("PROXY_PASSWORD")
-HOST = os.environ.get("PROXY_HOST")
-PORT = int(os.environ.get("PROXY_PORT"))
-
-
 manifest_json = """
 {
     "version": "1.0.0",
@@ -53,4 +45,4 @@ background_js = """
                     {urls: ["<all_urls>"]},
                     ['blocking']
         );
-        """ % (HOST, PORT, USERNAME, PASSWORD)
+        """
