@@ -26,9 +26,3 @@ def config() -> None:
     os.environ.setdefault("DJANGO_DEBUG", load_conf(config_parse, SYSTEM, "DEBUG", "False"))
     os.environ.setdefault("DJANGO_KEY", load_conf(config_parse, SYSTEM, "DJANGO_KEY", "root"))
     os.environ.setdefault("ANYCAPTCHA_KEY", load_conf(config_parse, SYSTEM, "ANYCAPTCHA_KEY", None))
-
-    # #PROXY
-    # os.environ.setdefault("PROXY_USERNAME", load_conf(config_parse, PROXY, "PROXY_USERNAME", "root"))
-    # os.environ.setdefault("PROXY_PASSWORD", load_conf(config_parse, PROXY, "PROXY_PASSWORD", "password"))
-    # os.environ.setdefault("PROXY_HOST", load_conf(config_parse, PROXY, "PROXY_HOST", "localhost"))
-    # os.environ.setdefault("PROXY_PORT", load_conf(config_parse, PROXY, "PROXY_PORT", "8000"))
