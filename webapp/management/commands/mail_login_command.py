@@ -1,14 +1,13 @@
-from bots.outlook_account_mail_checker import OutlookCheckerMailBot
 from django.core.management.base import BaseCommand
-
+from bots.mail_login_bot import MailLoginBot
 
 class Command(BaseCommand):
     help = 'Start email creator bot'
 
     def handle(self, *args, **options):
-        bot = OutlookCheckerMailBot(
+        bot = MailLoginBot(
             email='outlook@outlook.com',
-            password='password',
+            password='password1234',
             use_proxy=True
             )
         bot.work()
@@ -19,5 +18,5 @@ class Command(BaseCommand):
             default=None,
             required=True,
             type=int,
-            help='Start mail checker bot',
+            help='Start email creator bot',
         )

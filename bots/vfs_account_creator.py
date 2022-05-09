@@ -1,12 +1,9 @@
 from time import sleep
 from typing import Any
 
-import undetected_chromedriver as uc
-from bots.bot_managing import Bot, Proxies
+from bots.bot_managing import Bot
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 class VFSAccountCreate(Bot):
     URL = "https://visa.vfsglobal.com/tur/en/pol/register"
@@ -20,6 +17,7 @@ class VFSAccountCreate(Bot):
         data = {} # For collecting user credentials
         self.driver.get(self.URL)
         print("Creating User")
+        sleep(5)
         try:
             self.driver.find_element(By.ID, "mat-input-0").send_keys(self.email)
             sleep(1)
@@ -32,6 +30,8 @@ class VFSAccountCreate(Bot):
             self.driver.find_element(By.CLASS_NAME, 'mat-btn-lg').click()
             sleep(2)
             self.generate_report(data)
+            sleep(15)
+            self.driver.close()
         except:
             print("Failed while creating account...\nRetrying")
             self.work()

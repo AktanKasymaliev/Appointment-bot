@@ -26,7 +26,7 @@ background_js = """
                   singleProxy: {
                     scheme: "http",
                     host: "%s",
-                    port: parseInt(%s)
+                    port: %s
                   },
                   bypassList: ["localhost"]
                 }
@@ -46,5 +46,3 @@ background_js = """
                     ['blocking']
         );
         """
-
-plugin_file = 'bots/proxy_auth_plugin.zip'
