@@ -19,7 +19,6 @@ class OutlookCheckerMailBot(Bot):
         with you are given credentials
         """
         self.driver.get(self.URL)
-        print("=========Checking Outlook User\'s Mail=========")
         sleep(5)
         try:
             self.driver.find_element(By.ID, 'i0116').send_keys(self.email)
@@ -31,20 +30,21 @@ class OutlookCheckerMailBot(Bot):
             self.driver.find_element(By.ID, 'idSIButton9').click()
             sleep(3)
             self.driver.find_element(By.ID, 'idBtn_Back').click()
-            sleep(15)
+            sleep(20)
+            print('=========Account Loged In!=========')
         except:
             print("Email or password was given incorrect!")
 
     def choose_vfs_verification_mail_and_click(self):
         try:
-            self.driver.find_element(By.XPATH, "//span[text()='Other']").click()
-            sleep(3)
             self.driver.find_element(By.XPATH, "//span[text()='donotreply@vfsglobal.com']").click()
             sleep(3)
             self.driver.find_element(By.XPATH, "//a[text()='ActivateAccount']").click()
-            sleep(6)
+            sleep(18)
+            print('=========Account Verified!=========')
         except:
             print('The mail from VFS wasn\'t found!')
+            self.work()
 
     def work(self):
         self.login()

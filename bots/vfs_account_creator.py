@@ -16,7 +16,6 @@ class VFSAccountCreate(Bot):
     def work(self) -> Any:
         data = {} # For collecting user credentials
         self.driver.get(self.URL)
-        print("=========Creating VFS User=========")
         sleep(6)
         try:
             self.driver.find_element(By.ID, "mat-input-0").send_keys(self.email)
@@ -32,6 +31,7 @@ class VFSAccountCreate(Bot):
             self.generate_report(data)
             sleep(15)
             self.driver.close()
+            print('=========Created VFS user!=========') 
         except:
             print("Failed while creating account...\nRetrying")
             self.work()
