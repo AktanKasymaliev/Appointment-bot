@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 from configparser import ConfigParser
 
+import fake_useragent
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
@@ -76,6 +77,7 @@ class Bot(ABC):
             proxy.make_proxy()
             options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
 
+        options.add_argument("--incognito")
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
         options.add_argument("--disable-application-cache")
@@ -83,6 +85,7 @@ class Bot(ABC):
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.set_capability('useAutomationExtension', False)
         options.set_capability("excludeSwitches", ["enable-automation"])
+        options.add_argument(f"user-agent={fake_useragent.UserAgent().random}")
 
         driver = uc.Chrome(
                             service=Service(ChromeDriverManager().install()), 
