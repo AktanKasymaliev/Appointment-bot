@@ -30,16 +30,15 @@ class Command(BaseCommand):
             
             #free appointment window
             "FREE_WINDOW": 30,
+            "VISA_CENTRE": "Poland Visa Application Centre - Ankara",
         }
 
         ap = FillOutAppointmentBot(
-            email='outlook@outlook.com',
-            password='password',
-            visa_centre="visa application centre",
+            email='dr.derekwerner5036@outlook.com',
+            password='bBc2CUQuu!4R',
             person=person,
             use_proxy=False,
         )
-        ap.login()
         ap.work()
 
     def add_arguments(self, parser) -> None:
