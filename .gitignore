@@ -23,7 +23,7 @@ proxies.txt
 __pycache__/
 *.py[cod]
 *$py.class
-
+person_example.py
 #proxies
 background.js
 
