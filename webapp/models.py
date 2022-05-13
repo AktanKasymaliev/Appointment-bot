@@ -1,5 +1,7 @@
 from enum import Enum
 
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from django.db import models
 
 class CrawlTypes(Enum):
@@ -62,9 +64,12 @@ class Applicant(models.Model):
     contact_number = models.CharField(verbose_name='Phone number', max_length=20)
     passport = models.CharField(verbose_name='Personal number of passport', unique=True, max_length=20)
 
-    settlement = models.ForeignKey('Settlement', verbose_name='To settlement', on_delete=models.CASCADE)
-    email_account = models.OneToOneField(EmailAccount, on_delete=models.CASCADE) 
-    vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE)
+    settlement = models.ForeignKey('Settlement', verbose_name='To settlement', 
+                                on_delete=models.CASCADE, null=True, blank=True)
+    email_account = models.OneToOneField(EmailAccount, on_delete=models.CASCADE,
+                                    null=True, blank=True) 
+    vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE,
+                                        null=True, blank=True)
 
     def __str__(self) -> str:
         return f'{self.firstname} {self.lastname}'
@@ -117,3 +122,10 @@ class Settlement(models.Model):
     class Meta:
         verbose_name = 'Settlement'
         verbose_name_plural = 'Settlements'
+
+
+
+@receiver(post_save, sender=Applicant)
+def create_review(sender, instance, created, *args, **kwargs):
+    """Wakes up the lambda function"""
+    print(instance.id)
