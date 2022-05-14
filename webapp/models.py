@@ -1,8 +1,13 @@
 from enum import Enum
+from time import sleep
 
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import models
+
+from config.settings import DEBUG
+from webapp.support_funcs import start_create_applicant_account_bot, \
+                                send_request_to_aws_lambda, send_request_to_endpoint
 
 class CrawlTypes(Enum):
     EMAIL = 0
@@ -21,20 +26,6 @@ class Card(models.Model):
     class Meta:
         verbose_name = 'Credit card'
         verbose_name_plural = 'Credit cards' 
-
-class EmailAccount(models.Model):
-    created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
-    modified_at = models.DateTimeField(verbose_name='Modified at')
-    modified_by = models.DateTimeField(verbose_name='Modified by')
-    email = models.EmailField(verbose_name='Email', unique=True) 
-    password = models.CharField(verbose_name='Password', max_length=100)
-
-    def __str__(self) -> str:
-        return self.email
-
-    class Meta:
-        verbose_name = 'Email account'
-        verbose_name_plural = 'Email accounts' 
 
 class VFSAccount(models.Model):
     created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
@@ -63,13 +54,13 @@ class Applicant(models.Model):
     citizenship = models.CharField(verbose_name='Citizenship', max_length=100)
     contact_number = models.CharField(verbose_name='Phone number', max_length=20)
     passport = models.CharField(verbose_name='Personal number of passport', unique=True, max_length=20)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    email_password = models.CharField(max_length=255, blank=True, null=True)
 
     settlement = models.ForeignKey('Settlement', verbose_name='To settlement', 
-                                on_delete=models.CASCADE, null=True, blank=True)
-    email_account = models.OneToOneField(EmailAccount, on_delete=models.CASCADE,
-                                    null=True, blank=True) 
+                                on_delete=models.CASCADE, blank=True, null=True)
     vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE,
-                                        null=True, blank=True)
+                                        blank=True, null=True)
 
     def __str__(self) -> str:
         return f'{self.firstname} {self.lastname}'
@@ -123,9 +114,17 @@ class Settlement(models.Model):
         verbose_name = 'Settlement'
         verbose_name_plural = 'Settlements'
 
-
-
 @receiver(post_save, sender=Applicant)
-def create_review(sender, instance, created, *args, **kwargs):
+def create_applicant_account_signal(sender, instance, created, *args, **kwargs):
     """Wakes up the lambda function"""
-    print(instance.id)
+    if DEBUG:
+        email, password = start_create_applicant_account_bot()
+    else:
+        email, password = send_request_to_aws_lambda()
+
+    response = send_request_to_endpoint(
+        applicant_id=instance.id,
+        email=email,
+        password=password
+    )
+    return response

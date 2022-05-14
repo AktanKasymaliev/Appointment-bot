@@ -26,6 +26,7 @@ __pycache__/
 person_example.py
 #proxies
 background.js
+database
 
 # C extensions
 *.so

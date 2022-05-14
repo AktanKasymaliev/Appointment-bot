@@ -49,6 +49,8 @@ class OutlookCheckerMailBot(Bot):
     def work(self):
         self.login()
         self.choose_vfs_verification_mail_and_click()
-    
+        sleep(4)
+        self.driver.close()
+        
     def generate_report(self) -> Any:
         return super().generate_report()

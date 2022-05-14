@@ -17,6 +17,7 @@ SECRET_KEY = os.environ.get("DJANGO_KEY")
 DEBUG = eval(os.environ.get("DJANGO_DEBUG"))
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+CURRENT_HOST = "http://127.0.0.1:8000/"
 
 
 # Application definition
@@ -33,6 +34,7 @@ INSTALLED_APPS = [
     'webapp',
 
     #libs
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -87,7 +89,6 @@ DATABASES = {
     }
 
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

@@ -3,7 +3,6 @@ from time import sleep
 
 from selenium.webdriver.common.by import By
 
-from person_example import *
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
 
