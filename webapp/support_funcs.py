@@ -1,41 +1,18 @@
-from django.http import JsonResponse
-import requests
+import subprocess
 
-from bots import outlook_account_creator, outlook_account_mail_checker, vfs_account_creator, \
-                    mail_login_bot, fill_out_appointment_bot
+import requests
+from django.http import JsonResponse
+
 from config.settings import CURRENT_HOST
 
-def start_create_applicant_account_bot() -> tuple:
-    outlook_mail = outlook_account_creator.OutlookAccountCreator(use_proxy=True).work()
-    email = outlook_mail['email']
-    password = outlook_mail['password']
-
-    mail_login_bot.MailLoginBot(
-        email=email,
-        password=password,
-        use_proxy=True
-    ).work()
-
-    vfs_account_creator.VFSAccountCreate(
-        email=email,
-        password=password,
-        use_proxy=True
-        ).work()
-
-    outlook_account_mail_checker.OutlookCheckerMailBot(
-        email=email,
-        password=password,
-        use_proxy=True
-        ).work()
-    
-    fill_out_appointment_bot.FillOutAppointmentBot(
-        email=email,
-        password=password,
-        person={"key": "value"},
-        use_proxy=True
-    ).work()
-    
-    return email, password
+def start_create_applicant_account_bot(applicant_id: int):
+    subprocess.Popen(
+        ['python', 
+        'manage.py', 
+        'run_account_creator_command', 
+        f'--applicant_id={applicant_id}'
+        ]
+    )
 
 def send_request_to_aws_lambda() -> tuple: pass
 
@@ -51,6 +28,34 @@ def send_request_to_endpoint(applicant_id: int, email: str, password: str) -> Js
             }
         )
     if r.status_code == 200:
-        return r.json()
+        return r.content
     else:
         return f"Something went wrong with {r.status_code} code"
+
+def make_person_for_bot(applicant: object, email: str) -> dict:
+    return {
+            #personality
+            "FIRST_NAME": applicant.firstname,
+            "LAST_NAME": applicant.lastname,
+            "GENDER": applicant.gender.title(),
+            "DATE_OF_BIRTH": applicant.date_of_birth.strftime('%d%m%Y'),
+            "CITIZIENSHIP": applicant.citizenship,
+            "PASSPORT_NUMBER": applicant.passport,
+            "Passport_Expirty_Date": applicant.passport_expiry_date.strftime('%d%m%Y'),
+            "PHONE_CODE": applicant.phone_code,
+            "PHONE_NUMBER": applicant.phone_number,
+            "EMAIL": email,
+
+            #card info
+            "cart_num": '4123123123123',
+            "expiry_month": 1,
+            "expiry_year": 24,
+            "cvv": 111,
+            "name_and_surname": "Joe Baidenn",
+            "address": "Pushkin\'s street...)",
+            "city_district_postcode": "Moscow, Lublino disctrict, 000000",
+            
+            #free appointment window
+            "FREE_WINDOW": 30,
+            "VISA_CENTRE": "Poland Visa Application Centre - Ankara",
+        }

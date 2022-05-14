@@ -71,24 +71,32 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#      'default': {
+
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+#         'NAME': os.environ.get("DATABASE_NAME"),
+
+#         'USER': os.environ.get("DATABASE_USER"),
+
+#         'PASSWORD':  os.environ.get("DATABASE_PASSW"),
+
+#         'HOST':  os.environ.get("DATABASE_HOST"),
+
+#         'PORT': os.environ.get("DATABASE_PORT"),
+
+#     }
+
+# }
+
 DATABASES = {
-     'default': {
-
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-        'NAME': os.environ.get("DATABASE_NAME"),
-
-        'USER': os.environ.get("DATABASE_USER"),
-
-        'PASSWORD':  os.environ.get("DATABASE_PASSW"),
-
-        'HOST':  os.environ.get("DATABASE_HOST"),
-
-        'PORT': os.environ.get("DATABASE_PORT"),
-
-    }
-
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'database',
+        }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -113,15 +121,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = "Asia/Bishkek"
-
+TIME_ZONE = 'Asia/Bishkek'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
