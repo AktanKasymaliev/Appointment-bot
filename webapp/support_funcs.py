@@ -1,9 +1,10 @@
+from datetime import datetime
+import json
 import subprocess
 
 import requests
-from django.http import JsonResponse
 
-from config.settings import CURRENT_HOST
+CURRENT_HOST = "http://localhost:8000/"
 
 def start_create_applicant_account_bot(applicant_id: int):
     subprocess.Popen(
@@ -14,11 +15,17 @@ def start_create_applicant_account_bot(applicant_id: int):
         ]
     )
 
-def send_request_to_aws_lambda() -> tuple: pass
+def send_request_to_aws_lambda(): pass
 
 
-def send_request_to_endpoint(applicant_id: int, email: str, password: str) -> JsonResponse or str:
-    url = CURRENT_HOST + f'api/create/applicant/account/{applicant_id}/'
+def return_data(response) -> dict:
+    if response.status_code == 200:
+        return json.loads(response.text)
+    else:
+        return f"Something went wrong with {response.status_code} code"
+
+def send_request_to_add_email_password_endpoint(applicant_id: int, email: str, password: str) -> dict or str:
+    url = CURRENT_HOST + f'api/create-applicant-account/{applicant_id}/'
 
     r = requests.patch(
         url,
@@ -27,23 +34,32 @@ def send_request_to_endpoint(applicant_id: int, email: str, password: str) -> Js
                 "email_password": password
             }
         )
-    if r.status_code == 200:
-        return r.content
-    else:
-        return f"Something went wrong with {r.status_code} code"
+    
+    return return_data(response=r)
 
-def make_person_for_bot(applicant: object, email: str) -> dict:
+
+def send_request_to_get_applicant_data_endpoint(applicant_id: int) -> dict or str:
+    url = CURRENT_HOST + f'api/get-applicant-data/{applicant_id}/'
+    r = requests.get(url)
+
+    return return_data(response=r)
+
+def make_person_for_bot(applicant_id: object, email: str) -> dict:
+    data = send_request_to_get_applicant_data_endpoint(applicant_id)
+    date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d')
+    passport_expiry_date = datetime.strptime(data['passport_expiry_date'], '%Y-%m-%d')
+
     return {
             #personality
-            "FIRST_NAME": applicant.firstname,
-            "LAST_NAME": applicant.lastname,
-            "GENDER": applicant.gender.title(),
-            "DATE_OF_BIRTH": applicant.date_of_birth.strftime('%d%m%Y'),
-            "CITIZIENSHIP": applicant.citizenship,
-            "PASSPORT_NUMBER": applicant.passport,
-            "Passport_Expirty_Date": applicant.passport_expiry_date.strftime('%d%m%Y'),
-            "PHONE_CODE": applicant.phone_code,
-            "PHONE_NUMBER": applicant.phone_number,
+            "FIRST_NAME": data['firstname'],
+            "LAST_NAME": data['lastname'],
+            "GENDER": data['gender'].title(),
+            "DATE_OF_BIRTH": date_of_birth.strftime('%d%m%Y'),
+            "CITIZIENSHIP": data['citizenship'],
+            "PASSPORT_NUMBER": data['passport'],
+            "Passport_Expirty_Date": passport_expiry_date.strftime('%d%m%Y'),
+            "PHONE_CODE": data['phone_code'],
+            "PHONE_NUMBER": data['contact_number'],
             "EMAIL": email,
 
             #card info

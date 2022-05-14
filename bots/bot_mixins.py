@@ -11,6 +11,7 @@ class FormFillerMixin:
 
     VISA_CATEGORY = "National Visa (Type D) / Uzun Donem  / Wiza typu D"
     VISA_SUBCATEGORY = "2- Work permit / Calisma Izni / w celu wykonywania pracy"
+    # VISA_SUBCATEGORY = "3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy"
 
     def __click_button(self, class_name: str) -> None:
         self.driver.find_element(
