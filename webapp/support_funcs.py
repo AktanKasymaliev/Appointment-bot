@@ -44,7 +44,7 @@ def send_request_to_get_applicant_data_endpoint(applicant_id: int) -> dict or st
 
     return return_data(response=r)
 
-def make_person_for_bot(applicant_id: object, email: str) -> dict:
+def make_person_for_bot(applicant_id: int, email: str) -> dict:
     data = send_request_to_get_applicant_data_endpoint(applicant_id)
     date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d')
     passport_expiry_date = datetime.strptime(data['passport_expiry_date'], '%Y-%m-%d')
