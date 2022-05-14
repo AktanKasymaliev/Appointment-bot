@@ -4,6 +4,9 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import models
 
+from webapp.support_funcs import send_request_to_aws_lambda, start_create_applicant_account_bot
+from config.settings import DEBUG
+
 class CrawlTypes(Enum):
     EMAIL = 0
     VFS_ACCOUNT = 1
@@ -21,20 +24,6 @@ class Card(models.Model):
     class Meta:
         verbose_name = 'Credit card'
         verbose_name_plural = 'Credit cards' 
-
-class EmailAccount(models.Model):
-    created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
-    modified_at = models.DateTimeField(verbose_name='Modified at')
-    modified_by = models.DateTimeField(verbose_name='Modified by')
-    email = models.EmailField(verbose_name='Email', unique=True) 
-    password = models.CharField(verbose_name='Password', max_length=100)
-
-    def __str__(self) -> str:
-        return self.email
-
-    class Meta:
-        verbose_name = 'Email account'
-        verbose_name_plural = 'Email accounts' 
 
 class VFSAccount(models.Model):
     created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
@@ -61,15 +50,17 @@ class Applicant(models.Model):
     gender = models.CharField(verbose_name='Gender', max_length=10)
     date_of_birth = models.DateField(verbose_name='Date of birth')
     citizenship = models.CharField(verbose_name='Citizenship', max_length=100)
-    contact_number = models.CharField(verbose_name='Phone number', max_length=20)
+    phone_code = models.CharField(verbose_name="Phone code", max_length=4)
+    contact_number = models.CharField(verbose_name='Phone number', max_length=14)
     passport = models.CharField(verbose_name='Personal number of passport', unique=True, max_length=20)
+    passport_expiry_date = models.DateField(verbose_name='Passport expiry date')
+    email = models.EmailField(unique=True, blank=True, null=True)
+    email_password = models.CharField(max_length=255, blank=True, null=True)
 
     settlement = models.ForeignKey('Settlement', verbose_name='To settlement', 
-                                on_delete=models.CASCADE, null=True, blank=True)
-    email_account = models.OneToOneField(EmailAccount, on_delete=models.CASCADE,
-                                    null=True, blank=True) 
+                                on_delete=models.CASCADE, blank=True, null=True)
     vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE,
-                                        null=True, blank=True)
+                                        blank=True, null=True)
 
     def __str__(self) -> str:
         return f'{self.firstname} {self.lastname}'
@@ -123,9 +114,11 @@ class Settlement(models.Model):
         verbose_name = 'Settlement'
         verbose_name_plural = 'Settlements'
 
-
-
 @receiver(post_save, sender=Applicant)
-def create_review(sender, instance, created, *args, **kwargs):
+def create_applicant_account_signal(sender, instance, created, *args, **kwargs):
     """Wakes up the lambda function"""
-    print(instance.id)
+    
+    if DEBUG:
+        start_create_applicant_account_bot(instance.id)
+
+    send_request_to_aws_lambda()

@@ -17,6 +17,7 @@ SECRET_KEY = os.environ.get("DJANGO_KEY")
 DEBUG = eval(os.environ.get("DJANGO_DEBUG"))
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+CURRENT_HOST = "http://127.0.0.1:8000/"
 
 
 # Application definition
@@ -33,6 +34,7 @@ INSTALLED_APPS = [
     'webapp',
 
     #libs
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -112,15 +114,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = "Asia/Bishkek"
-
+TIME_ZONE = 'Asia/Bishkek'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

@@ -16,7 +16,7 @@ class Command(BaseCommand):
             "PASSPORT_NUMBER": '20506200414356',
             "Passport_Expirty_Date": '20082030', #without separetors
             "PHONE_CODE": '996',
-            "PHONE_NUMBER": '0559055934',
+            "PHONE_NUMBER": '1234567891',
             "EMAIL":'gmail@gmail.com',
 
             #cart info
@@ -25,7 +25,7 @@ class Command(BaseCommand):
             "expiry_year": 24,
             "cvv": 111,
             "name_and_surname": "Joe Baidenn",
-            "address": "Pushkin\'s stree...)",
+            "address": "Pushkin\'s street...)",
             "city_district_postcode": "Moscow, Lublino disctrict, 000000",
             
             #free appointment window
