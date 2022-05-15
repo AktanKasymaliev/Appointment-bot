@@ -19,3 +19,9 @@ class CreateApplicantAccountSerializer(serializers.ModelSerializer):
             fields=self.BULK_UPDATE_FIELDS)
 
         return instance
+
+class ApplicantDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Applicant
+        fields = '__all__'

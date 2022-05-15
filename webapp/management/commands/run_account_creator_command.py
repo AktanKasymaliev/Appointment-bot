@@ -2,8 +2,7 @@ from django.core.management.base import BaseCommand
 
 from bots import outlook_account_creator, outlook_account_mail_checker, vfs_account_creator, \
                     fill_out_appointment_bot, mail_login_bot
-from webapp.models import Applicant
-from webapp.support_funcs import send_request_to_endpoint
+from webapp.support_funcs import send_request_to_add_email_password_endpoint
 from webapp.support_funcs import make_person_for_bot
 
 
@@ -11,10 +10,11 @@ class Command(BaseCommand):
     help = 'Runs all bots'
 
     def handle(self, *args, **options):
-        applicant = Applicant.objects.get(options['applicant_id'])
-        outlook_mail = outlook_account_creator.OutlookAccountCreator(use_proxy=True).work()
-        email = outlook_mail['email']
-        password = outlook_mail['password']
+        applicant_id = options["applicant_id"]
+
+        outlook_mail_login_data = outlook_account_creator.OutlookAccountCreator(use_proxy=True).work()
+        email = outlook_mail_login_data['email']
+        password = outlook_mail_login_data['password']
 
         mail_login_bot.MailLoginBot(
             email=email,
@@ -37,12 +37,12 @@ class Command(BaseCommand):
         fill_out_appointment_bot.FillOutAppointmentBot(
             email=email,
             password=password,
-            person=make_person_for_bot(applicant, email),
+            person=make_person_for_bot(applicant_id, email),
             use_proxy=True
         ).work()
 
-        send_request_to_endpoint(
-            applicant_id=options["applicant_id"],
+        send_request_to_add_email_password_endpoint(
+            applicant_id=applicant_id,
             email=email,
             password=password
         )
