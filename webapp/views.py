@@ -13,3 +13,6 @@ class CreateApplicantAccountView(generics.RetrieveUpdateAPIView):
 class ApplicantDetailView(generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantDetailSerializer
+
+class WaitSmsApplicantPaymentView():
+    pass
