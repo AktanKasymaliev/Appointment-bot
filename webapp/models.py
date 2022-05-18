@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import models
 
-from webapp.support_funcs import send_request_to_aws_lambda, start_create_applicant_account_bot
+from bots.support_funcs import send_request_to_aws_lambda, start_create_applicant_account_bot
 from config.settings import DEBUG
 
 class CrawlTypes(Enum):
