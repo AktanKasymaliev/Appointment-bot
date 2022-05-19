@@ -17,6 +17,7 @@ class Card(models.Model):
     number = models.CharField(verbose_name='Card number', max_length=18)
     code = models.CharField(verbose_name='CCV', max_length=3)
     valid_through = models.DateField(verbose_name='Valid through')
+    is_busy = models.BooleanField(verbose_name='Is busy card', default=False)
 
     def __str__(self) -> str:
         return self.name

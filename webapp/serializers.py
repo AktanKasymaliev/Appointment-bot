@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from webapp.models import Applicant, Queue
+from webapp.models import Applicant, Card, Queue
 
 class CreateApplicantAccountSerializer(serializers.ModelSerializer):
     BULK_UPDATE_FIELDS = ('email', 'email_password', 'vfs_account')
@@ -25,6 +25,12 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Applicant
         fields = '__all__'
+
+class GetCardListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = '__all__' 
 
 class NewQueueSerializer(serializers.ModelSerializer):
 

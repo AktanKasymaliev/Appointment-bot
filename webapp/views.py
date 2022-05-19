@@ -1,8 +1,8 @@
 from rest_framework import generics, response, views, status
 
-from webapp.models import Applicant, Queue
+from webapp.models import Applicant, Card, Queue
 from webapp.serializers import CreateApplicantAccountSerializer,\
-     ApplicantDetailSerializer, NewQueueSerializer
+     ApplicantDetailSerializer, GetCardListSerializer, NewQueueSerializer
 
 class CreateApplicantAccountView(generics.RetrieveUpdateAPIView):
     serializer_class = CreateApplicantAccountSerializer
@@ -14,6 +14,10 @@ class CreateApplicantAccountView(generics.RetrieveUpdateAPIView):
 class ApplicantDetailView(generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantDetailSerializer
+
+class GetCardListView(generics.ListAPIView):
+    queryset = Card.objects.all()
+    serializer_class = GetCardListSerializer
 
 class NewQueueView(generics.CreateAPIView):
     # POST endpoint for creating queue with applicant_id, card_id
