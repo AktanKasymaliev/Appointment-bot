@@ -7,5 +7,5 @@ urlpatterns = [
     path('get-applicant-data/<int:pk>/', ApplicantDetailView.as_view()),
 
     path('create-new-sms-queue/', NewQueueView.as_view()),
-    path('check-sms-code/<int:applicant_id>/', CheckSmsCodeView.as_view())
+    path('check-sms-code/<int:applicant_id>/<int:card_id>/', CheckSmsCodeView.as_view())
 ]

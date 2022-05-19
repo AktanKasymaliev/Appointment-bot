@@ -1,4 +1,4 @@
-from rest_framework import generics, response, views
+from rest_framework import generics, response, views, status
 
 from webapp.models import Applicant, Queue
 from webapp.serializers import CreateApplicantAccountSerializer,\
@@ -22,13 +22,21 @@ class NewQueueView(generics.CreateAPIView):
 class CheckSmsCodeView(views.APIView):
     # GET endpoint for checking sms_code
 
-    def get(self, request, applicant_id):
-        queue_instance = Queue.objects.get(applicant_id=applicant_id)
-        code = queue_instance.sms_code
-
-        if code is not None:
-            return response.Response({"sms_code": code})
-
+    def __return_no_content(self):
         return response.Response({
-            "sms_code": None
-        })
+                "sms_code": "No content"
+            }, status=status.HTTP_204_NO_CONTENT)
+
+    def get(self, request, applicant_id, card_id):
+        try:
+            code = Queue.objects.get(
+                applicant_id=applicant_id, card_id=card_id
+                ).sms_code
+
+            if code is not None:
+                return response.Response({"sms_code": code}, status=status.HTTP_200_OK)
+            else:
+                self.__return_no_content()
+                
+        except Queue.DoesNotExist:
+            self.__return_no_content()
