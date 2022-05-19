@@ -114,6 +114,15 @@ class Settlement(models.Model):
         verbose_name = 'Settlement'
         verbose_name_plural = 'Settlements'
 
+class Queue(models.Model):
+    applicant_id = models.CharField(verbose_name="Applicant id number", max_length=255)
+    card_id =  models.CharField(verbose_name="Card id number", max_length=255)
+    sms_code = models.CharField(verbose_name="Sms code", max_length=255, blank=True, null=True)
+    is_processed = models.BooleanField(verbose_name='Is processed', default=False)
+
+    def __str__(self) -> str:
+        return f"Queue of {self.applicant_id} applicant"
+
 @receiver(post_save, sender=Applicant)
 def create_applicant_account_signal(sender, instance, created, *args, **kwargs):
     """Wakes up the lambda function"""
