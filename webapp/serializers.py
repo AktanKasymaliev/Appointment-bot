@@ -26,12 +26,6 @@ class ApplicantDetailSerializer(serializers.ModelSerializer):
         model = Applicant
         fields = '__all__'
 
-class GetCardListSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Card
-        fields = '__all__' 
-
 class NewQueueSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -42,3 +36,9 @@ class NewQueueSerializer(serializers.ModelSerializer):
         return Queue.objects.create(
             **validated_data
         )
+
+class GetFirstFreeCardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = '__all__'

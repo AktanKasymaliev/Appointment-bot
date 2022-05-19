@@ -13,3 +13,4 @@ websockets==10.3
 selenium-stealth==1.0.6
 fake-useragent==0.1.11
 djangorestframework==3.13.1
+polling==0.3.2

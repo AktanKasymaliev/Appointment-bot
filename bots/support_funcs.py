@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
 import subprocess
+import polling
 
 import requests
 
@@ -75,3 +76,12 @@ def make_person_for_bot(applicant_id: int, email: str) -> dict:
             "FREE_WINDOW": 30,
             "VISA_CENTRE": "Poland Visa Application Centre - Ankara",
         }
+
+def get_card():
+    url = CURRENT_HOST + '/api/get-first-free-card/'
+    response = polling.poll(
+        lambda: requests.get(url).status_code == 200,
+        step=60,
+        poll_forever=True,
+    )
+    print(response)
