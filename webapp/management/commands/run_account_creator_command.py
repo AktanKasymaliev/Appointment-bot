@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand
 
 from bots import outlook_account_creator, outlook_account_mail_checker, vfs_account_creator, \
                     fill_out_appointment_bot, mail_login_bot
-from webapp.support_funcs import send_request_to_add_email_password_endpoint
-from webapp.support_funcs import make_person_for_bot
+from bots.support_funcs import send_request_to_add_email_password_endpoint
+from bots.support_funcs import make_person_for_bot
 
 
 class Command(BaseCommand):

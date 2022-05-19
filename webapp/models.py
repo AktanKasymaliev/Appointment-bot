@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import models
 
-from webapp.support_funcs import send_request_to_aws_lambda, start_create_applicant_account_bot
+from bots.support_funcs import send_request_to_aws_lambda, start_create_applicant_account_bot
 from config.settings import DEBUG
 
 class CrawlTypes(Enum):
@@ -113,6 +113,15 @@ class Settlement(models.Model):
     class Meta:
         verbose_name = 'Settlement'
         verbose_name_plural = 'Settlements'
+
+class Queue(models.Model):
+    applicant_id = models.CharField(verbose_name="Applicant id number", max_length=255)
+    card_id =  models.CharField(verbose_name="Card id number", max_length=255)
+    sms_code = models.CharField(verbose_name="Sms code", max_length=255, blank=True, null=True)
+    is_processed = models.BooleanField(verbose_name='Is processed', default=False)
+
+    def __str__(self) -> str:
+        return f"Queue of {self.applicant_id} applicant"
 
 @receiver(post_save, sender=Applicant)
 def create_applicant_account_signal(sender, instance, created, *args, **kwargs):
