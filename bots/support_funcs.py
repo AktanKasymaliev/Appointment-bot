@@ -84,4 +84,4 @@ def get_card():
         step=60,
         poll_forever=True,
     )
-    print(response)
+    # TODO доделать логику с task'a github

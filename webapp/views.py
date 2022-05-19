@@ -22,7 +22,7 @@ class GetFirstFreeCardView(views.APIView):
 
     def get(self, request):
         try:
-            free_card = Card.objects.filter(is_busy=True).first()
+            free_card = Card.objects.filter(is_busy=False).first()
             return self.__return_response({
                 "Card": GetFirstFreeCardSerializer(free_card).data
                 }, status=status.HTTP_200_OK)
