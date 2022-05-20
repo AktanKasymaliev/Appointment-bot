@@ -1,8 +1,8 @@
 from rest_framework import generics, response, views, status
 
-from webapp.models import Applicant, Queue
+from webapp.models import Applicant, Card, Queue
 from webapp.serializers import CreateApplicantAccountSerializer,\
-     ApplicantDetailSerializer, NewQueueSerializer
+     ApplicantDetailSerializer, NewQueueSerializer, GetFirstFreeCardSerializer
 
 class CreateApplicantAccountView(generics.RetrieveUpdateAPIView):
     serializer_class = CreateApplicantAccountSerializer
@@ -14,6 +14,24 @@ class CreateApplicantAccountView(generics.RetrieveUpdateAPIView):
 class ApplicantDetailView(generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantDetailSerializer
+
+class GetFirstFreeCardView(views.APIView):
+
+    def __return_response(self, data, status):
+        return response.Response(data, status=status)
+
+    def get(self, request):
+        free_card = Card.objects.filter(is_busy=False).first()
+        
+        if free_card is not None: 
+            return self.__return_response(
+                GetFirstFreeCardSerializer(free_card).data, 
+                status=status.HTTP_200_OK)
+
+        return self.__return_response({
+            "Card": "No content"
+        }, status=status.HTTP_204_NO_CONTENT)
+
 
 class NewQueueView(generics.CreateAPIView):
     # POST endpoint for creating queue with applicant_id, card_id

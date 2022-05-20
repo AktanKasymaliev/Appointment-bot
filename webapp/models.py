@@ -12,11 +12,23 @@ class CrawlTypes(Enum):
     VFS_ACCOUNT = 1
     APPOINTMENT = 2
 
+visa_centres_type = (
+    ("0", "None"),
+    ("Poland Visa Application Center - Ankara", "Ankara"),
+    ("Poland Visa Application Center-Antalya", "Antalya"),
+    ("Poland Visa Application Center-Beyoglu", "Beyoglu"),
+    ("Poland Visa Application Center-Gaziantep", "Gaziantep"),
+    ("Poland Visa Application Center-Izmir", "Izmir"),
+    ("Poland Visa Application Center-Trabzon", "Trabzon")
+)
+    
+
 class Card(models.Model):
     name = models.CharField(verbose_name='Name', max_length=255)
     number = models.CharField(verbose_name='Card number', max_length=18)
     code = models.CharField(verbose_name='CCV', max_length=3)
     valid_through = models.DateField(verbose_name='Valid through')
+    is_busy = models.BooleanField(verbose_name='Is busy card', default=False)
 
     def __str__(self) -> str:
         return self.name
@@ -57,6 +69,7 @@ class Applicant(models.Model):
     email = models.EmailField(unique=True, blank=True, null=True)
     email_password = models.CharField(max_length=255, blank=True, null=True)
 
+    visa_centre = models.CharField(max_length=255, choices=visa_centres_type, default="0")
     settlement = models.ForeignKey('Settlement', verbose_name='To settlement', 
                                 on_delete=models.CASCADE, blank=True, null=True)
     vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE,
