@@ -62,12 +62,12 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         pass
 
     def work(self) -> Any:
-        self.login(self.email, self.password)
-        sleep(2)
+        # self.login(self.email, self.password)
+        # sleep(2)
 
-        # Start New Booking button
-        self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
-        sleep(2)
+        # # Start New Booking button
+        # self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
+        # sleep(2)
 
         self.choose_visa_centre(self.__get_current_centre())
 
