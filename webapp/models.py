@@ -42,18 +42,18 @@ class VFSAccount(models.Model):
 
 class Applicant(models.Model):
     VISA_CENTERS = (
-        ('Ankara', 'Poland Visa Application Center - Ankara'),
-        ('Antalya', 'Poland Visa Application Center-Antalya'),
-        ('Beyoglu', 'Poland Visa Application Center-Beyoglu'),
-        ('Gaziantep', 'Poland Visa Application Center-Gaziantep'),
-        ('Izmir', 'Poland Visa Application Center-Izmir'),
-        ('Trabzon', 'Poland Visa Application Center-Trabzon')
+        ('Poland Visa Application Center - Ankara', 'Ankara'),
+        ('Poland Visa Application Center-Antalya', 'Antalya'),
+        ('Poland Visa Application Center-Beyoglu', 'Beyoglu'),
+        ('Poland Visa Application Center-Gaziantep', 'Gaziantep'),
+        ('Poland Visa Application Center-Izmir', 'Izmir'),
+        ('Poland Visa Application Center-Trabzon', 'Trabzon')
     )
     SUBCATEGORIES = (
-        ('1- Higher Education', '1- Higher Education / Yuksek Ogrenim / studia wyzsze'),
-        ('2- Turkish citizens', '2- Turkish citizens - work permit / TC vatandaslari - calisma Izni / obywatele Turcji - w celu wykonywania pracy'),
-        ('3- Foreigners', '3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy'),
-        ('4- Long-Stay others', '4- Long-Stay others / Diger Uzun Donem / wiza typu D w celu innym niz wymienione')
+        ('1- Higher Education / Yuksek Ogrenim / studia wyzsze', '1- Higher Education'),
+        ('2- Turkish citizens - work permit / TC vatandaslari - calisma Izni / obywatele Turcji - w celu wykonywania pracy', '2- Turkish citizens'),
+        ('3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy', '3- Foreigners'),
+        ('4- Long-Stay others / Diger Uzun Donem / wiza typu D w celu innym niz wymienione', '4- Long-Stay others')
     )
     created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
     modified_at = models.DateTimeField(verbose_name='Modified at')
