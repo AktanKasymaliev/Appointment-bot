@@ -45,8 +45,10 @@ def send_request_to_get_applicant_data_endpoint(applicant_id: int) -> dict or st
 
     return return_data(response=r)
 
-def make_person_for_bot(applicant_id: int, email: str) -> dict:
+def make_person_for_bot(applicant_id: int, email: str, card_data: dict) -> dict:
     data = send_request_to_get_applicant_data_endpoint(applicant_id)
+
+    card_valid_through = datetime.strptime(card_data['valid_through'], '%Y-%m-%d')
     date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d')
     passport_expiry_date = datetime.strptime(data['passport_expiry_date'], '%Y-%m-%d')
 
@@ -64,10 +66,10 @@ def make_person_for_bot(applicant_id: int, email: str) -> dict:
             "EMAIL": email,
 
             #card info
-            "cart_num": '4123123123123',
-            "expiry_month": 1,
-            "expiry_year": 24,
-            "cvv": 111,
+            "cart_num": card_data['number'],
+            "expiry_month": card_valid_through.strftime('%m'),
+            "expiry_year": card_valid_through.strftime('%Y'),
+            "cvv": card_data['code'],
             "name_and_surname": "Joe Baidenn",
             "address": "Pushkin\'s street...)",
             "city_district_postcode": "Moscow, Lublino disctrict, 000000",
@@ -77,12 +79,11 @@ def make_person_for_bot(applicant_id: int, email: str) -> dict:
             "VISA_CENTRE": "Poland Visa Application Centre - Ankara",
         }
 
-def get_card():
+def get_card() -> dict:
     url = CURRENT_HOST + '/api/get-first-free-card/'
     response = polling.poll(
         lambda: requests.get(url).status_code == 200,
         step=60,
         poll_forever=True,
     )
-    # TODO доделать логику с task'a github
-    
+    return json.loads(response.text)    
