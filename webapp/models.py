@@ -41,6 +41,20 @@ class VFSAccount(models.Model):
         verbose_name_plural = 'VFS accounts'
 
 class Applicant(models.Model):
+    VISA_CENTERS = (
+        ('Ankara', 'Poland Visa Application Center - Ankara'),
+        ('Antalya', 'Poland Visa Application Center-Antalya'),
+        ('Beyoglu', 'Poland Visa Application Center-Beyoglu'),
+        ('Gaziantep', 'Poland Visa Application Center-Gaziantep'),
+        ('Izmir', 'Poland Visa Application Center-Izmir'),
+        ('Trabzon', 'Poland Visa Application Center-Trabzon')
+    )
+    SUBCATEGORIES = (
+        ('1- Higher Education', '1- Higher Education / Yuksek Ogrenim / studia wyzsze'),
+        ('2- Turkish citizens', '2- Turkish citizens - work permit / TC vatandaslari - calisma Izni / obywatele Turcji - w celu wykonywania pracy'),
+        ('3- Foreigners', '3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy'),
+        ('4- Long-Stay others', '4- Long-Stay others / Diger Uzun Donem / wiza typu D w celu innym niz wymienione')
+    )
     created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
     modified_at = models.DateTimeField(verbose_name='Modified at')
     modified_by = models.DateTimeField(verbose_name='Modified by')
@@ -56,6 +70,8 @@ class Applicant(models.Model):
     passport_expiry_date = models.DateField(verbose_name='Passport expiry date')
     email = models.EmailField(unique=True, blank=True, null=True)
     email_password = models.CharField(max_length=255, blank=True, null=True)
+    visa_center = models.CharField(max_length=255, choices=VISA_CENTERS)
+    subcategory = models.CharField(max_length=255, choices=SUBCATEGORIES)
 
     settlement = models.ForeignKey('Settlement', verbose_name='To settlement', 
                                 on_delete=models.CASCADE, blank=True, null=True)
