@@ -10,8 +10,8 @@ class FormFillerMixin:
     """Forms filler mixin. There\'s ready methods for filling VFS forms here"""
 
     VISA_CATEGORY = "National Visa (Type D) / Uzun Donem  / Wiza typu D"
-    VISA_SUBCATEGORY = "2- Work permit / Calisma Izni / w celu wykonywania pracy"
     # VISA_SUBCATEGORY = "3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy"
+    VISA_SUBCATEGORY = "1- Higher Education / Yuksek Ogrenim / studia wyzsze"
 
     def __click_button(self, class_name: str) -> None:
         self.driver.find_element(
@@ -84,7 +84,7 @@ class FormFillerMixin:
             By.XPATH, "//div[@id='mat-select-value-9']"
             ).click()
         sleep(2)
-        self.__mat_select(person["CITIZIENSHIP"])
+        self.__mat_select(person["CITIZIENSHIP"].upper())
         sleep(2)
         #Passport number
         self.driver.find_element(By.ID, 'mat-input-4').send_keys(person["PASSPORT_NUMBER"])

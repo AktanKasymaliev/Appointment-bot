@@ -14,12 +14,12 @@ class CrawlTypes(Enum):
 
 visa_centres_type = (
     ("0", "None"),
-    ("1", "Poland Visa Application Center - Ankara"),
-    ("2", "Poland Visa Application Center-Antalya"),
-    ("3", "Poland Visa Application Center-Beyoglu"),
-    ("4", "Poland Visa Application Center-Gaziantep"),
-    ("5", "Poland Visa Application Center-Izmir"),
-    ("6", "Poland Visa Application Center-Trabzon")
+    ("Poland Visa Application Center - Ankara", "Ankara"),
+    ("Poland Visa Application Center-Antalya", "Antalya"),
+    ("Poland Visa Application Center-Beyoglu", "Beyoglu"),
+    ("Poland Visa Application Center-Gaziantep", "Gaziantep"),
+    ("Poland Visa Application Center-Izmir", "Izmir"),
+    ("Poland Visa Application Center-Trabzon", "Trabzon")
 )
     
 
@@ -69,7 +69,7 @@ class Applicant(models.Model):
     email = models.EmailField(unique=True, blank=True, null=True)
     email_password = models.CharField(max_length=255, blank=True, null=True)
 
-    visa_center = models.CharField(max_length=255, choices=visa_centres_type, default="0")
+    visa_centre = models.CharField(max_length=255, choices=visa_centres_type, default="0")
     settlement = models.ForeignKey('Settlement', verbose_name='To settlement', 
                                 on_delete=models.CASCADE, blank=True, null=True)
     vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE,

@@ -76,14 +76,18 @@ def make_person_for_bot(applicant_id: int, email: str, card_data: dict) -> dict:
             
             #free appointment window
             "FREE_WINDOW": 30,
-            "VISA_CENTRE": "Poland Visa Application Centre - Ankara",
+            "VISA_CENTRE": data['visa_centre'],
         }
 
+def test_status_code(response):
+    return response.status_code == 200
+
 def get_card() -> dict:
-    url = CURRENT_HOST + '/api/get-first-free-card/'
+    url = CURRENT_HOST + 'api/get-first-free-card/'
     response = polling.poll(
-        lambda: requests.get(url).status_code == 200,
+        lambda: requests.get(url),
         step=60,
         poll_forever=True,
+        check_success=test_status_code
     )
     return json.loads(response.text)    
