@@ -156,6 +156,7 @@ class FormFillerMixin:
         )
     
     def fill_bank_data_out(self, person: dict):
+        
         # Card Num
         self.driver.find_element(By.NAME, 'pan').send_keys(person["cart_num"])
         sleep(2)

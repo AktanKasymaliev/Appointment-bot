@@ -21,16 +21,16 @@ class GetFirstFreeCardView(views.APIView):
         return response.Response(data, status=status)
 
     def get(self, request):
-        try:
-            free_card = Card.objects.filter(is_busy=False).first()
+        free_card = Card.objects.filter(is_busy=False).first()
+        
+        if free_card is not None: 
             return self.__return_response({
                 "Card": GetFirstFreeCardSerializer(free_card).data
                 }, status=status.HTTP_200_OK)
 
-        except Card.DoesNotExist:
-            return self.__return_response({
-                "Card": "No content"
-            }, status=status.HTTP_204_NO_CONTENT)
+        return self.__return_response({
+            "Card": "No content"
+        }, status=status.HTTP_204_NO_CONTENT)
 
 
 class NewQueueView(generics.CreateAPIView):
