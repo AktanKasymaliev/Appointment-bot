@@ -10,8 +10,8 @@ class FormFillerMixin:
     """Forms filler mixin. There\'s ready methods for filling VFS forms here"""
 
     VISA_CATEGORY = "National Visa (Type D) / Uzun Donem  / Wiza typu D"
-    # VISA_SUBCATEGORY = "3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy"
-    VISA_SUBCATEGORY = "1- Higher Education / Yuksek Ogrenim / studia wyzsze"
+    VISA_SUBCATEGORY = "3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy"
+    # VISA_SUBCATEGORY = "1- Higher Education / Yuksek Ogrenim / studia wyzsze"
 
     def __click_button(self, class_name: str) -> None:
         self.driver.find_element(
