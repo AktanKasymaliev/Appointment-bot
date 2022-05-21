@@ -58,3 +58,15 @@ class CheckSmsCodeView(views.APIView):
                 
         except Queue.DoesNotExist:
             self.__return_no_content()
+        
+class GetSmsCodeView(views.APIView):
+
+    def get(self, request):
+        print(request)
+
+    def post(self, request):
+        from_num = request.POST.get('From',)
+        to_num = request.POST.get('To')
+        text = request.POST.get('Body')
+        print(f"From: {from_num}\nTo Number: {to_num}\nText: {text}")
+        return response.Response("Sms incomed", status.HTTP_201_CREATED)
