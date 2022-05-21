@@ -61,9 +61,6 @@ class CheckSmsCodeView(views.APIView):
         
 class GetSmsCodeView(views.APIView):
 
-    def get(self, request):
-        print(request)
-
     def post(self, request):
         from_num = request.POST.get('From',)
         to_num = request.POST.get('To')
