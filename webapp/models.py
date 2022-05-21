@@ -21,7 +21,13 @@ visa_centres_type = (
     ("Poland Visa Application Center-Izmir", "Izmir"),
     ("Poland Visa Application Center-Trabzon", "Trabzon")
 )
-    
+
+SUBCATEGORIES = (
+    ('1- Higher Education / Yuksek Ogrenim / studia wyzsze', '1- Higher Education'),
+    ('2- Turkish citizens - work permit / TC vatandaslari - calisma Izni / obywatele Turcji - w celu wykonywania pracy', '2- Turkish citizens'),
+    ('3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy', '3- Foreigners'),
+    ('4- Long-Stay others / Diger Uzun Donem / wiza typu D w celu innym niz wymienione', '4- Long-Stay others')
+)
 
 class Card(models.Model):
     name = models.CharField(verbose_name='Name', max_length=255)
@@ -71,6 +77,8 @@ class Applicant(models.Model):
     email_password = models.CharField(max_length=255, blank=True, null=True)
 
     visa_centre = models.CharField(max_length=255, choices=visa_centres_type, default="0")
+    subcategory = models.CharField(max_length=255, choices=SUBCATEGORIES)
+
     settlement = models.ForeignKey('Settlement', verbose_name='To settlement', 
                                 on_delete=models.CASCADE, blank=True, null=True)
     vfs_account = models.OneToOneField(VFSAccount, on_delete=models.CASCADE,
