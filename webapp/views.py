@@ -69,3 +69,4 @@ class GetSmsCodeView(views.APIView):
         to_num = request.POST.get('To')
         text = request.POST.get('Body')
         print(f"From: {from_num}\nTo Number: {to_num}\nText: {text}")
+        return response.Response("Sms incomed", status.HTTP_201_CREATED)
