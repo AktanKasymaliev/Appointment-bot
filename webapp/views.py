@@ -1,10 +1,14 @@
+from collections import defaultdict
+from email.policy import default
 from rest_framework import generics, response, views, status
+from django.db.models import Q, Count
 
 from webapp.models import Applicant, Card, Queue
 from webapp.serializers import CreateApplicantAccountSerializer,\
-     ApplicantDetailSerializer, NewQueueSerializer, GetFirstFreeCardSerializer
+                                ApplicantSerializer, NewQueueSerializer,\
+                                GetFirstFreeCardSerializer
 
-class CreateApplicantAccountView(generics.RetrieveUpdateAPIView):
+class CreateApplicantAccountView(generics.UpdateAPIView):
     serializer_class = CreateApplicantAccountSerializer
     queryset = Applicant.objects.all()
 
@@ -13,7 +17,22 @@ class CreateApplicantAccountView(generics.RetrieveUpdateAPIView):
 
 class ApplicantDetailView(generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
-    serializer_class = ApplicantDetailSerializer
+    serializer_class = ApplicantSerializer
+
+class GetApplicantsListView(views.APIView):
+
+    def get(self, request):
+        applicants = (Applicant.objects
+            .filter(is_success=False, is_busy=False)
+            .values('visa_centre', 'subcategory')
+            .annotate(Count('subcategory'))
+        )
+        response_data = []
+        for data in applicants:
+            response_data.append(
+                (data['visa_centre'], data['subcategory'], data['subcategory__count'])
+            )
+        return response.Response(response_data)
 
 class GetFirstFreeCardView(views.APIView):
 

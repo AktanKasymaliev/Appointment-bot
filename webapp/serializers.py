@@ -20,7 +20,7 @@ class CreateApplicantAccountSerializer(serializers.ModelSerializer):
 
         return instance
 
-class ApplicantDetailSerializer(serializers.ModelSerializer):
+class ApplicantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Applicant

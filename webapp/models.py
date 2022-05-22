@@ -75,6 +75,8 @@ class Applicant(models.Model):
     passport_expiry_date = models.DateField(verbose_name='Passport expiry date')
     email = models.EmailField(unique=True, blank=True, null=True)
     email_password = models.CharField(max_length=255, blank=True, null=True)
+    is_success = models.BooleanField(verbose_name='Is success', default=False)
+    is_busy = models.BooleanField(verbose_name='Is busy', default=False)
 
     visa_centre = models.CharField(max_length=255, choices=visa_centres_type, default="0")
     subcategory = models.CharField(max_length=255, choices=SUBCATEGORIES)
@@ -145,11 +147,11 @@ class Queue(models.Model):
     def __str__(self) -> str:
         return f"Queue of {self.applicant_id} applicant"
 
-@receiver(post_save, sender=Applicant)
-def create_applicant_account_signal(sender, instance, created, *args, **kwargs):
-    """Wakes up the lambda function"""
+# @receiver(post_save, sender=Applicant)
+# def create_applicant_account_signal(sender, instance, created, *args, **kwargs):
+#     """Wakes up the lambda function"""
     
-    if DEBUG:
-        start_create_applicant_account_bot(instance.id)
+#     if DEBUG:
+#         start_create_applicant_account_bot(instance.id)
 
-    send_request_to_aws_lambda()
+#     send_request_to_aws_lambda()

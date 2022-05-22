@@ -45,6 +45,17 @@ def send_request_to_get_applicant_data_endpoint(applicant_id: int) -> dict or st
 
     return return_data(response=r)
 
+def send_request_to_get_all_applicants_data_endpoint() -> dict:
+    url = CURRENT_HOST + f'api/get-applicants-data/'
+    r = requests.get(url)
+
+    return return_data(response=r)
+
+def return_visa_centre():
+    data = send_request_to_get_all_applicants_data_endpoint()
+    data.append(["END", "END", 0])
+    return data
+
 def make_person_for_bot(applicant_id: int, email: str, card_data: dict) -> dict:
     data = send_request_to_get_applicant_data_endpoint(applicant_id)
 

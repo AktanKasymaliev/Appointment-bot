@@ -1,16 +1,9 @@
-import random
-from time import sleep
 import os
 from abc import ABC, abstractmethod
 from typing import Any
 from configparser import ConfigParser
 
 import fake_useragent
-
-from selenium.webdriver.common.by import By
-
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
