@@ -2,6 +2,8 @@ import random
 from time import sleep
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
@@ -10,8 +12,6 @@ class FormFillerMixin:
     """Forms filler mixin. There\'s ready methods for filling VFS forms here"""
 
     VISA_CATEGORY = "National Visa (Type D) / Uzun Donem  / Wiza typu D"
-    VISA_SUBCATEGORY = "3- Foreigners - work permit/ Yabanci vatandaslar - calisma Izni / cudzoziemcy - w celu wykonywania pracy"
-    # VISA_SUBCATEGORY = "1- Higher Education / Yuksek Ogrenim / studia wyzsze"
 
     def __click_button(self, class_name: str) -> None:
         self.driver.find_element(
@@ -34,8 +34,8 @@ class FormFillerMixin:
 
     def choose_visa_centre(self, visa_centre: str) -> None:
         #DropDown click
-        self.driver.find_element(By.XPATH,
-            "//mat-form-field/div/div/div[3]"
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, "//mat-form-field/div/div/div[3]"))
         ).click()
         sleep(6)
 
@@ -44,21 +44,21 @@ class FormFillerMixin:
 
     def choose_visa_category(self) -> None:
         #DropDown click
-        self.driver.find_element(By.XPATH,
-            "//div[@id='mat-select-value-3']"
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-3']"))
         ).click()
         sleep(6)
         
         self.__mat_select(self.VISA_CATEGORY)
         sleep(6)
 
-    def choose_visa_subcategory(self) -> None:
+    def choose_visa_subcategory(self, subcategory: str) -> None:
         #DropDown click
-        self.driver.find_element(By.XPATH,
-            "//div[@id='mat-select-value-5']"
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-5']"))
         ).click()
         sleep(7)
-        self.__mat_select(self.VISA_SUBCATEGORY)
+        self.__mat_select(subcategory)
         sleep(7)
 
     def fill_person_data_out(self, person: dict) -> None:

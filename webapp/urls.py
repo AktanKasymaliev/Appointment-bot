@@ -1,12 +1,13 @@
 from django.urls import path
 
 from webapp.views import ApplicantDetailView, CheckSmsCodeView,\
-                     CreateApplicantAccountView, GetFirstFreeCardView, GetSmsCodeView,\
+                     CreateApplicantAccountView, GetApplicantsListView, GetFirstFreeCardView, GetSmsCodeView,\
                      NewQueueView
 
 urlpatterns = [
     path('create-applicant-account/<int:pk>/', CreateApplicantAccountView.as_view()),
     path('get-applicant-data/<int:pk>/', ApplicantDetailView.as_view()),
+    path('get-applicants-data/', GetApplicantsListView.as_view()),
 
     path('get-first-free-card/', GetFirstFreeCardView.as_view()),
 
