@@ -55,6 +55,11 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         return self.current_visa[1]
 
     def __check_appointment_time(self):
+        #Continue button
+        self.__click_button(
+            "mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-stroked-button mat-button-base"
+        )
+        sleep(5)
         #TODO Add checking logic. We need 1.day; 2.How many hours are available
         pass
 
@@ -93,8 +98,6 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
                             ).click()
         sleep(5)
         self.fill_person_data_out(self.FAKE_PERSON)
-        sleep(5)
-        self.select_appointment_book()
         sleep(5)
         self.__check_appointment_time()
         sleep(1000)
