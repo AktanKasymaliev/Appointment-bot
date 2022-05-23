@@ -1,6 +1,6 @@
 from django.urls import path
 
-from webapp.views import ApplicantDetailView, CheckSmsCodeView,\
+from webapp.views import ApplicantDetailView, CatchFreeWindowsView, CheckSmsCodeView,\
                      CreateApplicantAccountView, GetApplicantsListView, GetFirstFreeCardView, GetSmsCodeView,\
                      NewQueueView
 
@@ -13,5 +13,7 @@ urlpatterns = [
 
     path('create-new-sms-queue/', NewQueueView.as_view()),
     path('check-sms-code/<int:applicant_id>/<int:card_id>/', CheckSmsCodeView.as_view()),
-    path('twilio-sms-code-webhook/', GetSmsCodeView.as_view())
+    path('twilio-sms-code-webhook/', GetSmsCodeView.as_view()),
+
+    path('catch-free-windows/', CatchFreeWindowsView.as_view())
 ]

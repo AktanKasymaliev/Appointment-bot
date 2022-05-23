@@ -81,8 +81,17 @@ class CheckSmsCodeView(views.APIView):
 class GetSmsCodeView(views.APIView):
 
     def post(self, request):
-        from_num = request.POST.get('From',)
+        from_num = request.POST.get('From')
         to_num = request.POST.get('To')
         text = request.POST.get('Body')
         print(f"From: {from_num}\nTo Number: {to_num}\nText: {text}")
         return response.Response("Sms incomed", status.HTTP_201_CREATED)
+
+class CatchFreeWindowsView(views.APIView):
+
+    def post(self, request):
+        visa_centre = request.POST.get('visa_centre')
+        subcategory = request.POST.get('subcategory')
+        free_windows = request.POST.get('free_windows')
+        print(visa_centre, subcategory, free_windows)
+        return response.Response({"All right"})
