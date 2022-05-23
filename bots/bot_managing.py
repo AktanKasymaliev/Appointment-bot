@@ -77,7 +77,7 @@ class Bot(ABC):
                 )
             proxy.make_proxy()
             options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
-
+        options.add_argument("--headless")
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
         options.add_argument("--disable-application-cache")
@@ -86,22 +86,23 @@ class Bot(ABC):
         options.set_capability('useAutomationExtension', False)
         options.set_capability("excludeSwitches", ["enable-automation"])
         options.add_argument(f"user-agent={fake_useragent.UserAgent().random}")
-
+        
+        driver_path = ChromeDriverManager(path='/tmp').install()
         driver = uc.Chrome(
-                            service=Service(ChromeDriverManager().install()), 
-                            options=options
-                            )
+            service=Service(driver_path),
+            options=options)
 
         # Make your driver more secretive
-        stealth(driver,
-                languages=["en-US", "en"],
-                vendor="Google Inc.",
-                platform="Win32",
-                webgl_vendor="Intel Inc.",
-                renderer="Intel Iris OpenGL Engine",
-                fix_hairline=True,
-                )
-                
+        stealth(
+            driver,
+            languages=["en-US", "en"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True,
+        )
+    
         driver.maximize_window()
         driver.implicitly_wait(10)
 
