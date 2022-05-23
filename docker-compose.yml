@@ -17,31 +17,31 @@ services:
       DJANGO_SETTINGS_FOLDER: config
     depends_on:
       - db
-  # nginx:
-  #   image: nginx
-  #   container_name: ${PROJECT_NAME}Nginx
-  #   ports:
-  #     - "8920:80"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf
-  #     - staticfiles:/app/static
-  #     - mediafiles:/app/media
-  #   depends_on:
-  #     - web
+#    nginx:
+ #     build: ./nginx
+#      container_name: ${PROJECT_NAME}Nginx
+  #    ports:
+   #     - 8000
+    #  volumes:
+     #   - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    #    - staticfiles:/app/static
+    #    - mediafiles:/app/media
+    #  depends_on:
+    #    - web
 
   db:
-    container_name: db
-    image: postgres:13.0-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_PASSWORD=bots147852
-      - POSTGRES_USER=bot_user
-      - POSTGRES_DB=botapp
-    # env_file:
-    #   - ./settings.ini
-    ports:
-      - "5432:5432"
+     container_name: db
+     image: postgres:13.0-alpine
+     volumes:
+       - postgres_data:/var/lib/postgresql/data/
+    # environment:
+    #   - POSTGRES_PASSWORD=bots147852
+    #   - POSTGRES_USER=bot_user
+    #   - POSTGRES_DB=botapp
+     env_file:
+       - ./settings.ini
+     ports:
+       - "5432:5432"
 
 volumes:
   staticfiles:
