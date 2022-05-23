@@ -2,6 +2,7 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any
 from configparser import ConfigParser
+from pyvirtualdisplay import Display
 
 import fake_useragent
 
@@ -92,7 +93,24 @@ class Bot(ABC):
                 )
             proxy.make_proxy()
             options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
-        options.add_argument("--headless")
+        
+        browser_exec_path = '/opt/google/chrome/chrome'
+        if 'LAMBDA_TASK_ROOT' in os.environ:
+            display = Display(visible=False, extra_args=[':25'], size=(2560, 1440)) 
+            display.start()
+            print('Started Display')
+            options.add_argument("window-size=2560x1440")
+            options.add_argument("--user-data-dir=/tmp/chrome-user-data")
+            options.add_argument("--remote-debugging-port=9222")
+            options.binary_location = browser_exec_path
+        else:
+            options.add_argument("--headless")
+
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--single-process")
+
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
         options.add_argument("--disable-application-cache")
@@ -103,7 +121,10 @@ class Bot(ABC):
         options.add_argument(f"user-agent={fake_useragent.UserAgent().random}")
         
         driver_path = ChromeDriverManager(path='/tmp').install()
+
         driver = uc.Chrome(
+            driver_executable_path=driver_path,
+            browser_executable_path=browser_exec_path,
             service=Service(driver_path),
             options=options)
 
