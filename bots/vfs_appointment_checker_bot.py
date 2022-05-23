@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
-from bots.support_funcs import  return_visa_centre
+from bots.support_funcs import  return_visa_centre, send_request_to_start_filler_bot_endpoint
 
 
 class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
@@ -63,15 +63,30 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
             "//button[@class='mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-stroked-button mat-button-base']/span"
             ).click()
         sleep(6)
+
         #Book Appointment section filling out
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         sleep(6)
-        a_tag_with_dates = self.driver.find_elements(
-            By.XPATH,
-            "//td[contains(@class,'date-availiable')]//a[@class='fc-daygrid-day-number']"
+
+        a_tags_with_windows = [] #TODO do it dictionary with {month: day}
+        for _ in range(3):
+            a_tags_with_windows.append(self.driver.find_elements(
+                By.XPATH,
+                "//td[contains(@class,'date-availiable')]//a[@class='fc-daygrid-day-number']"
+            ))
+            sleep(3)
+            self.driver.find_element(
+                By.XPATH,
+                "//button[@class='fc-next-button fc-button fc-button-primary']/span"
+            ).click()
+
+        free_windows = [int(date.text) for date in a_tags_with_windows]
+
+        send_request_to_start_filler_bot_endpoint(
+            visa_centre=self.__get_current_centre(),
+            subcategory=self.__get_current_subcategory(),
+            free_windows=free_windows
         )
-        free_dates = [date.text for date in a_tag_with_dates]
-        print(free_dates)
         sleep(1000)
 
     def work(self) -> Any:

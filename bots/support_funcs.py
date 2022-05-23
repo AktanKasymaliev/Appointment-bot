@@ -102,3 +102,16 @@ def get_card() -> dict:
         check_success=test_status_code
     )
     return json.loads(response.text)    
+
+def send_request_to_start_filler_bot_endpoint(
+    visa_centre: str, subcategory: str, free_windows: list):
+    url = CURRENT_HOST + 'api/catch-free-windows/'
+    response = requests.post(
+        url, 
+        data={
+            'visa_centre': visa_centre,
+            'subcategory': subcategory,
+            'free_windows': free_windows
+        }
+    )
+    return return_data(response)
