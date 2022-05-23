@@ -1,11 +1,17 @@
 [SYSTEM]
-DJANGO_KEY=django_key
+DJANGO_KEY=root
 DEBUG=True
-ANYCAPTCHA_KEY=exampleKey_6312g3fh12t3y1t23...
+ANYCAPTCHA_KEY='41abcc2148244c49816ba8a310a20080'
 
 [DATABASE]
-PASSWORD=example_password123
-USER=example_user
-NAME=example_db 
-HOST=example_localhost 
-PORT=example_5432
+PASSWORD=bots147852
+USER=bot_user
+NAME=botapp 
+HOST=db 
+PORT=5432
+
+[PROXY]
+PROXY_USERNAME=geonode_z565u0TeJK-autoReplace-True
+PROXY_PASSWORD=463fefc8-892c-4590-92e1-db0cf5457032
+PROXY_HOST=premium-residential.geonode.com
+PROXY_PORT=9000
