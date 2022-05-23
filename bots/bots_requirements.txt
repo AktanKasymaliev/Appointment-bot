@@ -5,9 +5,10 @@ git+https://github.com/anycaptcha/anycaptcha-python.git
 
 Faker==13.7.0
 selenium==4.1.3
-undetected-chromedriver==3.1.5.post4
+git+https://github.com/ultrafunkamsterdam/undetected-chromedriver.git@refs/pull/643/head#egg=undetected_chromedriver
 webdriver-manager==3.5.4
 websockets==10.3
 selenium-stealth==1.0.6
 fake-useragent==0.1.11
 polling==0.3.2
+pyvirtualdisplay
