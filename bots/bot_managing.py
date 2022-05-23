@@ -13,35 +13,50 @@ from selenium_stealth import stealth
 from bots.constants import manifest_json, background_js
 from bots.bot_configurations import  load_conf
 
-class Proxie:
+PROXY = "PROXY"
+PROXY_FILES_PATH = "PROXY_FILES_PATH"
 
+class Proxie:
     def __init__(self, username: str, password: str, host: str, port: int) -> None:
         self.USERNAME = username
         self.PASSWORD = password
         self.HOST = host
-        self.PORT = port 
+        self.PORT = port
+        
+        config_parse = ConfigParser()
+        config_parse.read("bot_settings.ini")
+
+        self.PROXY_FILES_PATH = load_conf(config_parse, PROXY, PROXY_FILES_PATH)
+        print(self.PROXY_FILES_PATH)
+
 
     def give_the_path(self) -> str:
-        return os.getcwd() + '/bots/proxy/'
+        # On prod it should be /tmp
+        proxy_files_path = self.PROXY_FILES_PATH + '/bots/proxy/'
+        print('proxy_files_path', proxy_files_path)
+        return proxy_files_path
 
     def make_proxy(self) -> None:
         path = self.give_the_path()
+        # Create path
+        os.makedirs(path, exist_ok=True)
+        background_js_file = path + 'background.js'
+        manifest_json_file = path + 'manifest.json'
 
-        with open(path + 'background.js', 'w') as f:
+        with open(background_js_file, 'w') as f:
             f.write(background_js % (
                 self.HOST, self.PORT, 
                 self.USERNAME, self.PASSWORD
                     )
                 )
 
-        with open(path + 'manifest.json', 'w') as f:
+        with open(manifest_json_file, 'w') as f:
             f.write(manifest_json)
 
 
 class Bot(ABC):
     CONFIG_PARSE = ConfigParser()
     CONFIG_PARSE.read("bot_settings.ini")
-    PROXY = "PROXY"
 
     USERNAME = load_conf(CONFIG_PARSE, PROXY, "PROXY_USERNAME")
     PASSWORD = load_conf(CONFIG_PARSE, PROXY, "PROXY_PASSWORD")

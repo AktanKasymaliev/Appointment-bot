@@ -3,3 +3,4 @@ PROXY_USERNAME=example_user
 PROXY_PASSWORD=example_password123
 PROXY_HOST=example_localhost
 PROXY_PORT=example_1111
+PROXY_FILES_PATH=.
