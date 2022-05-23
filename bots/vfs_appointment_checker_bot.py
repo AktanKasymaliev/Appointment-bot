@@ -2,6 +2,8 @@ from typing import Any
 from time import sleep
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
@@ -56,16 +58,25 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
 
     def __check_appointment_time(self):
         #Continue button
-        self.__click_button(
-            "mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-stroked-button mat-button-base"
+        self.driver.find_element(
+            By.XPATH,
+            "//button[@class='mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-stroked-button mat-button-base']/span"
+            ).click()
+        sleep(6)
+        #Book Appointment section filling out
+        self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+        sleep(6)
+        a_tag_with_dates = self.driver.find_elements(
+            By.XPATH,
+            "//td[contains(@class,'date-availiable')]//a[@class='fc-daygrid-day-number']"
         )
-        sleep(5)
-        #TODO Add checking logic. We need 1.day; 2.How many hours are available
-        pass
+        free_dates = [date.text for date in a_tag_with_dates]
+        print(free_dates)
+        sleep(1000)
 
     def work(self) -> Any:
         self.login(self.email, self.password)
-        sleep(2)
+        sleep(5)
         # Start New Booking button
         self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
         sleep(2)
@@ -92,13 +103,12 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
 
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         sleep(4)
-        self.driver.find_element(
-                            By.XPATH, 
-                            "//section/form/mat-card/button/span"
-                            ).click()
-        sleep(5)
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
+        ).click() 
+        sleep(7)
         self.fill_person_data_out(self.FAKE_PERSON)
-        sleep(5)
+        sleep(10)
         self.__check_appointment_time()
         sleep(1000)
 
