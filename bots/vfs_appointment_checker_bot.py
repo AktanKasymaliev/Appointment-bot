@@ -68,17 +68,15 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         sleep(6)
 
-        a_tags_with_windows = [] #TODO do it dictionary with {month: day}
-        for _ in range(3):
-            a_tags_with_windows.append(self.driver.find_elements(
-                By.XPATH,
-                "//td[contains(@class,'date-availiable')]//a[@class='fc-daygrid-day-number']"
-            ))
-            sleep(3)
-            self.driver.find_element(
-                By.XPATH,
-                "//button[@class='fc-next-button fc-button fc-button-primary']/span"
-            ).click()
+        a_tags_with_windows = self.driver.find_elements(
+            By.XPATH,
+            "//td[contains(@class,'date-availiable')]//a[@class='fc-daygrid-day-number']"
+        )
+        # Pagination in months
+        # self.driver.find_element(
+        #     By.XPATH,
+        #     "//button[@class='fc-next-button fc-button fc-button-primary']/span"
+        # ).click()
 
         free_windows = [int(date.text) for date in a_tags_with_windows]
 
