@@ -2,7 +2,7 @@
 six==1.16.0
 requests==2.27.1
 git+https://github.com/anycaptcha/anycaptcha-python.git
-
+gunicorn==20.1.0
 Django==4.0.4
 Faker==13.7.0
 psycopg2-binary==2.9.3

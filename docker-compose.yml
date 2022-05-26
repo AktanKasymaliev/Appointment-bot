@@ -1,0 +1,54 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    container_name: ${PROJECT_NAME}Web
+    # command: python3 manage.py runserver
+    volumes:
+      - ./:/config
+      - staticfiles:/config/staticfiles
+      - mediafiles:/config/media
+    ports:
+      - 8000:8000
+    environment:
+      DJANGO_ADMIN_USERNAME: admin
+      DJANGO_ADMIN_PASSWORD: admin
+      DJANGO_SETTINGS_FOLDER: config
+    depends_on:
+      - db
+#    nginx:
+ #     build: ./nginx
+#      container_name: ${PROJECT_NAME}Nginx
+  #    ports:
+   #     - 8000
+    #  volumes:
+     #   - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    #    - staticfiles:/app/static
+    #    - mediafiles:/app/media
+    #  depends_on:
+    #    - web
+
+  db:
+     container_name: db
+     image: postgres:13.0-alpine
+     volumes:
+       - postgres_data:/var/lib/postgresql/data/
+    # environment:
+    #   - POSTGRES_PASSWORD=bots147852
+    #   - POSTGRES_USER=bot_user
+    #   - POSTGRES_DB=botapp
+     env_file:
+       - ./settings.ini
+     ports:
+       - "5432:5432"
+
+volumes:
+  staticfiles:
+    name: ${PROJECT_NAME}Staticfiles
+
+  mediafiles:
+    name: ${PROJECT_NAME}Mediafiles
+
+  postgres_data:
+    name: ${PROJECT_NAME}PostgresData
