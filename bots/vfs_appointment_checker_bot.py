@@ -64,7 +64,8 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
             ).click()
         sleep(6)
 
-        #Book Appointment section filling out
+        month = self.driver.find_element(By.CLASS_NAME, 'fc-toolbar-title').text
+
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         sleep(6)
 
@@ -72,6 +73,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
             By.XPATH,
             "//td[contains(@class,'date-availiable')]//a[@class='fc-daygrid-day-number']"
         )
+
         # Pagination in months
         # self.driver.find_element(
         #     By.XPATH,
@@ -83,7 +85,8 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         send_request_to_start_filler_bot_endpoint(
             visa_centre=self.__get_current_centre(),
             subcategory=self.__get_current_subcategory(),
-            free_windows=free_windows
+            free_windows=free_windows,
+            month=month
         )
         sleep(1000)
 

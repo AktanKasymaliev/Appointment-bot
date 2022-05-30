@@ -93,5 +93,6 @@ class CatchFreeWindowsView(views.APIView):
         visa_centre = request.POST.get('visa_centre')
         subcategory = request.POST.get('subcategory')
         free_windows = request.POST.get('free_windows')
-        print(visa_centre, subcategory, free_windows)
+        month = request.POST.get('month')
+        print(visa_centre, subcategory, free_windows, month)
         return response.Response({"All right"})
