@@ -88,6 +88,7 @@ def make_person_for_bot(applicant_id: int, email: str, card_data: dict) -> dict:
             #free appointment window
             "FREE_WINDOW": 30,
             "VISA_CENTRE": data['visa_centre'],
+            "SUBCATEGORY": data['subcategory']
         }
 
 def test_status_code(response):

@@ -8,7 +8,6 @@ import fake_useragent
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
-from selenium_stealth import stealth
 
 from bots.constants import manifest_json, background_js
 from bots.bot_configurations import  load_conf
@@ -92,17 +91,6 @@ class Bot(ABC):
         driver = uc.Chrome(
             service=Service(driver_path),
             options=options)
-
-        # Make your driver more secretive
-        stealth(
-            driver,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-        )
     
         driver.maximize_window()
         driver.implicitly_wait(10)

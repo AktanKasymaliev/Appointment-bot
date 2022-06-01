@@ -3,6 +3,8 @@ from typing import Any
 from time import sleep
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.person_example import *
 from bots.bot_managing import Bot
@@ -22,26 +24,25 @@ class FillOutAppointmentBot(Bot, FormFillerMixin, LoginMixin):
 
     def work(self) -> Any:
         self.login(self.email, self.password)
-        sleep(2)
+        sleep(7)
 
         # Start New Booking button
         self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
-        sleep(2)
+        sleep(4)
 
         self.choose_visa_centre(self.person["VISA_CENTRE"])
 
         self.choose_visa_category()
         
-        self.choose_visa_subcategory()
+        self.choose_visa_subcategory(self.person["SUBCATEGORY"])
         
-        # Submitt btn for categories
+        # Submit btn for categories
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         sleep(4)
-        self.driver.find_element(
-                            By.XPATH, 
-                            "//section/form/mat-card/button/span"
-                            ).click()
-        sleep(5)
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
+        ).click() 
+        sleep(7)
         # Next steps of new booking
         self.fill_person_data_out(self.person)
         sleep(10)

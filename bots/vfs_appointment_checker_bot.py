@@ -92,7 +92,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
 
     def work(self) -> Any:
         self.login(self.email, self.password)
-        sleep(5)
+        sleep(7)
         # Start New Booking button
         self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
         sleep(2)

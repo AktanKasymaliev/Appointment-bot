@@ -36,18 +36,27 @@ class Command(BaseCommand):
             use_proxy=True
             ).work()
         
-        fill_out_appointment_bot.FillOutAppointmentBot(
-            email=email,
-            password=password,
-            person=make_person_for_bot(applicant_id, email, card_data),
-            use_proxy=True
-        ).work()
 
         send_request_to_add_email_password_endpoint(
             applicant_id=applicant_id,
             email=email,
             password=password
         )
+
+        #TODO доработать платежную систему, а так все работает!
+        # fill_out_appointment_bot.FillOutAppointmentBot(
+        #     email="michaelmckinney89586@outlook.com",
+        #     password="B6CnQLWTY$8O",
+        #     person=make_person_for_bot(applicant_id, "michaelmckinney89586@outlook.com", card_data),
+        #     use_proxy=True
+        # ).work()
+
+        fill_out_appointment_bot.FillOutAppointmentBot(
+            email=email,
+            password=password,
+            person=make_person_for_bot(applicant_id, email, card_data),
+            use_proxy=True
+        ).work()
 
         Queue.objects.create(
             applicant_id=applicant_id,
