@@ -5,6 +5,8 @@ import polling
 
 import requests
 
+from bot_token import CHAT_ID, TOKEN
+
 CURRENT_HOST = "http://localhost:8000/"
 
 def start_create_applicant_account_bot(applicant_id: int):
@@ -107,14 +109,13 @@ def get_card() -> dict:
 def send_request_to_start_filler_bot_endpoint(
     visa_centre: str, subcategory: str, free_windows: list,
     month: str):
-    url = CURRENT_HOST + 'api/catch-free-windows/'
-    response = requests.post(
-        url, 
-        data={
-            'visa_centre': visa_centre,
-            'subcategory': subcategory,
-            'free_windows': free_windows,
-            'month': month,
-        }
-    )
+    message = f"""
+    Visa center: {visa_centre}\n
+    Subcategory: {subcategory}\n
+    Free dates for appointment: {free_windows}\n
+    Month: {month}\n
+    """
+    url = f'https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={message}'
+
+    response = requests.get(url)
     return return_data(response)
