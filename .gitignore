@@ -27,7 +27,7 @@ person_example.py
 #proxies
 background.js
 database
-
+bot_token.py
 # C extensions
 *.so
 
