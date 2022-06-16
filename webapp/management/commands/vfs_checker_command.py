@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand
-from bots.support_funcs import send_request_to_get_all_applicants_data_endpoint
 from bots.vfs_appointment_checker_bot import VFSAppointmentCheckerBot
 
 class Command(BaseCommand):
