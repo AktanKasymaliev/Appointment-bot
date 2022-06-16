@@ -6,7 +6,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from bots.person_example import *
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
 

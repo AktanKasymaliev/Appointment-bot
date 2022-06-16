@@ -5,7 +5,7 @@ import polling
 
 import requests
 
-from bot_token import CHAT_ID, TOKEN
+from .bot_token import CHAT_ID, TOKEN
 
 CURRENT_HOST = "http://localhost:8000/"
 
