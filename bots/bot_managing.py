@@ -1,7 +1,6 @@
 import os
 from abc import ABC, abstractmethod
 from typing import Any
-from configparser import ConfigParser
 
 import fake_useragent
 
@@ -10,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 
 from bots.constants import manifest_json, background_js
-from bots.bot_configurations import  load_conf
+from bots.bot_configurations import  bot_config_parser_on, load_conf
 
 class Proxie:
 
@@ -38,8 +37,7 @@ class Proxie:
 
 
 class Bot(ABC):
-    CONFIG_PARSE = ConfigParser()
-    CONFIG_PARSE.read("bot_settings.ini")
+    CONFIG_PARSE = bot_config_parser_on()
     PROXY = "PROXY"
 
     USERNAME = load_conf(CONFIG_PARSE, PROXY, "PROXY_USERNAME")

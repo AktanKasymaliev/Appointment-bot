@@ -6,8 +6,12 @@ import polling
 import requests
 
 from .bot_token import CHAT_ID, TOKEN
+from .bot_configurations import load_conf, bot_config_parser_on
 
-CURRENT_HOST = "http://localhost:8000/"
+CONFIG_PARSE = bot_config_parser_on()
+DJANGO_CONF = "DJANGO"
+
+CURRENT_HOST = load_conf(CONFIG_PARSE, DJANGO_CONF, "DJANGO_HOST")
 
 def start_create_applicant_account_bot(applicant_id: int):
     subprocess.Popen(
