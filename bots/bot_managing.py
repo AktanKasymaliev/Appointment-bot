@@ -75,7 +75,14 @@ class Bot(ABC):
             proxy.make_proxy()
             options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
             
-        # options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-setuid-sandbox")
+        options.add_argument("--log-level=3")
+        options.add_argument("--window-size=2560x1440")
+        options.add_argument("--disable-dev-tools")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--single-process")
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
         options.add_argument("--disable-application-cache")
@@ -83,10 +90,18 @@ class Bot(ABC):
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.set_capability('useAutomationExtension', False)
         options.set_capability("excludeSwitches", ["enable-automation"])
-        options.add_argument(f"user-agent={fake_useragent.UserAgent().random}")
+        options.add_argument("--no-zygote")
         
+        options.add_argument(f"--user-data-dir=/tmp/user-data-dir")
+        options.add_argument(f"--data-path=/tmp/data-path")
+        options.add_argument(f"--disk-cache-dir=/tmp/disk-cache-dir/")
+        options.add_argument("--remote-debugging-port=9230")
+        options.add_argument(f"user-agent={fake_useragent.UserAgent().random}")
+
         driver_path = ChromeDriverManager(path='/tmp').install()
         driver = uc.Chrome(
+            headless=False,
+            driver_executable_path=driver_path,
             service=Service(driver_path),
             options=options)
     
