@@ -8,6 +8,6 @@ class Command(BaseCommand):
         checker = VFSAppointmentCheckerBot(
             email='dr.derekwerner5036@outlook.com',
             password='bBc2CUQuu!4R',
-            use_proxy=True,
+            use_proxy=False,
         )
         checker.work()

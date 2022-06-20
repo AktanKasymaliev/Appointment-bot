@@ -1,0 +1,8 @@
+[PROXY]
+PROXY_USERNAME=geonode
+PROXY_PASSWORD=geonode
+PROXY_HOST=geonode
+PROXY_PORT=geonode
+
+[DJANGO]
+DJANGO_HOST=http://localhost:8000/
