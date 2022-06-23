@@ -14,3 +14,5 @@ fake-useragent==0.1.11
 djangorestframework==3.13.1
 polling==0.3.2
 pyTelegramBotAPI==4.5.1
+pyvirtualdisplay==3.0
+boto3==1.23.5

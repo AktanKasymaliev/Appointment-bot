@@ -69,17 +69,17 @@ RUN curl https://www.sqlite.org/2022/sqlite-autoconf-3380500.tar.gz --output /tm
     tar xzf sqlite-autoconf-3380500.tar.gz && cd /tmp/sqlite-autoconf-3380500 && ./configure --prefix=/usr/local && \
     make && make install && cd /tmp && rm -r sqlite-autoconf-3380500
 
-ENV PATH /opt/chrome:$PATH
-
 WORKDIR /config
+
+ENV PATH /opt/chrome:$PATH
 
 COPY ./webservice-requirements.txt ./
 COPY ./settings.ini ./settings.ini
 COPY ./entrypoint.sh ./
-RUN chmod +x entrypoint.sh
+RUN chmod +x entrypoint.sh && ln -s /opt/chrome/chrome /opt/chrome/google-chrome
 RUN pip3 install --upgrade pip -q
 RUN pip3 install -r webservice-requirements.txt
 
 
 COPY . .
-CMD ["python3.9", "/config/app.py"]
+CMD ["python3.9", "/config/bot_runner.py"]

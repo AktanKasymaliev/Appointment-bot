@@ -5,6 +5,7 @@ from typing import Any
 import fake_useragent
 
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 
@@ -17,7 +18,7 @@ class Proxie:
         self.USERNAME = username
         self.PASSWORD = password
         self.HOST = host
-        self.PORT = port 
+        self.PORT = port
 
     def give_the_path(self) -> str:
         return os.getcwd() + '/bots/proxy/'
@@ -66,12 +67,16 @@ class Bot(ABC):
         """
         Method for open your chrome browser
         """
+        d = DesiredCapabilities.CHROME
+        d['goog:loggingPrefs'] = { 'browser': 'ALL', 'driver': 'ALL' }
+
         options = uc.ChromeOptions()
+        options.binary_location = '/opt/chrome/google-chrome'
         if use_proxy:
             proxy = Proxie(
                 self.USERNAME, self.PASSWORD,
                 self.HOST, self.PORT
-                )
+            )
             proxy.make_proxy()
             options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
             
@@ -102,6 +107,7 @@ class Bot(ABC):
         driver = uc.Chrome(
             headless=False,
             driver_executable_path=driver_path,
+            desired_capabilities=d,
             service=Service(driver_path),
             options=options)
     
