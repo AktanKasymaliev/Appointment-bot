@@ -1,0 +1,85 @@
+FROM amazonlinux:2 as build
+
+RUN yum install -y unzip && \
+    curl -Lo "/tmp/chrome-linux.zip" "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F992733%2Fchrome-linux.zip?alt=media" && \
+    unzip /tmp/chrome-linux.zip -d /opt/
+
+# Build FFmpeg
+FROM amazonlinux:2 as ffmpeg
+WORKDIR /ffmpeg_sources
+RUN yum install autoconf automake bzip2 bzip2-devel cmake libxcb libxcb-devel \
+    freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel -y -q
+
+# Compile NASM assembler
+RUN curl -OL https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.bz2
+RUN tar xjvf nasm-2.15.05.tar.bz2
+RUN cd nasm-2.15.05 && sh autogen.sh && \
+    ./configure --prefix="/ffmpeg_sources/ffmpeg_build" \
+    --bindir="/ffmpeg_sources/bin" && \
+    make && make install
+
+# Compile Yasm assembler
+RUN curl -OL https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz
+RUN tar xzvf yasm-1.3.0.tar.gz
+RUN cd yasm-1.3.0 && \
+    ./configure --prefix="/ffmpeg_sources/ffmpeg_build" \
+    --bindir="/ffmpeg_sources/bin" && \
+    make && make install
+
+# Compile FFmpeg
+RUN curl -OL https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+RUN tar xjvf ffmpeg-snapshot.tar.bz2
+RUN cd ffmpeg && \
+    export PATH="/ffmpeg_sources/bin:$PATH" && \
+    export PKG_CONFIG_PATH="/ffmpeg_sources/ffmpeg_build/lib/pkgconfig" && \
+    ./configure \
+    --prefix="/ffmpeg_sources/ffmpeg_build" \
+    --pkg-config-flags="--static" \
+    --extra-cflags="-I/ffmpeg_sources/ffmpeg_build/include" \
+    --extra-ldflags="-L/ffmpeg_sources/ffmpeg_build/lib" \
+    --extra-libs=-lpthread \
+    --extra-libs=-lm \
+    --enable-libxcb \
+    --bindir="/ffmpeg_sources/bin" && \
+    make && \
+    make install
+
+FROM amazonlinux:2
+
+COPY --from=build /opt/chrome-linux /opt/chrome
+COPY --from=ffmpeg /ffmpeg_sources/bin/ffmpeg /usr/bin/
+
+RUN yum install xz atk cups-libs gtk3 libXcomposite alsa-lib \
+    libXcursor libXdamage libXext libXi libXrandr libXScrnSaver \
+    libXtst pango at-spi2-atk libXt xorg-x11-server-Xvfb \
+    xorg-x11-xauth dbus-glib dbus-glib-devel \
+    gcc openssl-devel bzip2-devel libffi-devel zlib-devel \
+    git curl tar which make epel-release sqlite-devel -y
+
+WORKDIR /tmp
+# Install Python
+RUN mkdir -p /tmp/Python-3.9.2 && curl https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz --output /tmp/Python-3.9.2.tgz && \
+    tar xzf Python-3.9.2.tgz && cd /tmp/Python-3.9.2 && ./configure --enable-optimizations && \
+    make altinstall && cd /tmp && rm -r Python-3.9.2.tgz && \
+    curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py && \
+    python3.9 get-pip.py && python3.9 -m pip install --upgrade pip
+
+# Install latest SQLite
+RUN curl https://www.sqlite.org/2022/sqlite-autoconf-3380500.tar.gz --output /tmp/sqlite-autoconf-3380500.tar.gz && \
+    tar xzf sqlite-autoconf-3380500.tar.gz && cd /tmp/sqlite-autoconf-3380500 && ./configure --prefix=/usr/local && \
+    make && make install && cd /tmp && rm -r sqlite-autoconf-3380500
+
+WORKDIR /config
+
+ENV PATH /opt/chrome:$PATH
+
+COPY ./webservice-requirements.txt ./
+COPY ./settings.ini ./settings.ini
+COPY ./entrypoint.sh ./
+RUN chmod +x entrypoint.sh && ln -s /opt/chrome/chrome /opt/chrome/google-chrome
+RUN pip3 install --upgrade pip -q
+RUN pip3 install -r webservice-requirements.txt
+
+
+COPY . .
+CMD ["python3.9", "/config/bot_runner.py"]
