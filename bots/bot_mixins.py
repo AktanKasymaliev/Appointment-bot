@@ -8,8 +8,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 
-from bots.helpers import find_element_with_retry_by_id
-from bots.helpers import find_element_with_retry_by_class
+from bots.support_funcs import find_element_with_retry_by_id
+from bots.support_funcs import find_element_with_retry_by_class
+
 
 class FormFillerMixin:
     """Forms filler mixin. There\'s ready methods for filling VFS forms here"""
