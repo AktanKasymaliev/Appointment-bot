@@ -48,9 +48,12 @@ def main():
         print('Closed recorder')
         recorder.wait(timeout=20)
         sleep(10)
-        s3_file_object = s3_resource.Object(
-            bucket_name=BUCKET_NAME, key='screenshot.png')
-        s3_file_object.upload_file('/tmp/' + 'screenshot.png')
+        try:
+            s3_file_object = s3_resource.Object(
+                bucket_name=BUCKET_NAME, key='screenshot.png')
+            s3_file_object.upload_file('/tmp/' + 'screenshot.png')
+        except FileNotFoundError:
+            print('Screenshot file not found')
         s3_file_object = s3_resource.Object(
             bucket_name=BUCKET_NAME, key=video_filename)
         s3_file_object.upload_file('/tmp/' + video_filename)
