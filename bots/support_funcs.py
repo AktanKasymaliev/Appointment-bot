@@ -131,7 +131,7 @@ def send_request_to_start_filler_bot_endpoint(
     return return_data(response)
 
 
-def find_element_with_retry_base(driver, element_locator, by):
+def find_element_with_retry_base(driver, element_locator, by, refresh):
     wait_time = 10
     retries = 1
     while retries <= 3:
@@ -142,12 +142,12 @@ def find_element_with_retry_base(driver, element_locator, by):
         except TimeoutException:
             wait_time += 5
             retries += 1
-            driver.refresh()
+            refresh and driver.refresh()
 
 
-def find_element_with_retry_by_id(driver, element_id):
-    return find_element_with_retry_base(driver, element_id, By.ID)
+def find_element_with_retry_by_id(driver, element_id, refresh=False):
+    return find_element_with_retry_base(driver, element_id, By.ID, refresh)
 
 
-def find_element_with_retry_by_class(driver, element_class):
-    return find_element_with_retry_base(driver, element_class, By.CLASS_NAME)
+def find_element_with_retry_by_class(driver, element_class, refresh=False):
+    return find_element_with_retry_base(driver, element_class, By.CLASS_NAME, refresh)

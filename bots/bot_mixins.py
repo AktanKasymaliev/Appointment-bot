@@ -192,22 +192,22 @@ class LoginMixin:
         self.driver.get(self.URL)
         sleep(15)
         try:
-            email_inp = find_element_with_retry_by_id(self.driver, 'mat-input-0')
+            email_inp = find_element_with_retry_by_id(self.driver, 'mat-input-0', refresh=True)
             if not email_inp:
                 raise NoSuchElementException("Email input couldn't be found")
             email_inp.send_keys(email)
             sleep(2)
-            pass_inp = find_element_with_retry_by_id(self.driver, 'mat-input-1')
+            pass_inp = find_element_with_retry_by_id(self.driver, 'mat-input-1', refresh=True)
             if not pass_inp:
                 raise NoSuchElementException("Password input couldn't be found")
             pass_inp.send_keys(password)
             sleep(2)
-            btn = find_element_with_retry_by_class(self.driver, 'mat-btn-lg')
+            btn = find_element_with_retry_by_class(self.driver, 'mat-btn-lg', refresh=True)
             if not btn:
                 raise NoSuchElementException("'Sign In' button couldn't be found")
             btn.click()
             sleep(15)
-            one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container')
+            one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=True)
             if not one_trust_btn:
                 raise NoSuchElementException("Onetrust btn container couldn't be found")
             one_trust_btn.click()
