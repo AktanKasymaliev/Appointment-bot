@@ -8,7 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 
-from bots.support_funcs import is_firewall_blocked
+from bots.support_funcs import is_firewall_blocked, find_element_with_retry_by_class, find_element_with_retry_by_id
+
 
 class FormFillerMixin:
     """Forms filler mixin. There\'s ready methods for filling VFS forms here"""
@@ -195,12 +196,25 @@ class LoginMixin:
         self.driver.get(self.URL)
         sleep(15)
         try:
-            self.driver.find_element(By.ID, 'mat-input-0').send_keys(email)
+            email_inp = find_element_with_retry_by_id(self.driver, 'mat-input-0', refresh=True)
+            if not email_inp:
+                raise NoSuchElementException("Email input couldn't be found")
+            email_inp.send_keys(email)
             sleep(2)
-            self.driver.find_element(By.ID, 'mat-input-1').send_keys(password)
+            pass_inp = find_element_with_retry_by_id(self.driver, 'mat-input-1', refresh=True)
+            if not pass_inp:
+                raise NoSuchElementException("Password input couldn't be found")
+            pass_inp.send_keys(password)
             sleep(2)
-            self.driver.find_element(By.CLASS_NAME, 'mat-btn-lg').click()
+            btn = find_element_with_retry_by_class(self.driver, 'mat-btn-lg', refresh=True)
+            if not btn:
+                raise NoSuchElementException("'Sign In' button couldn't be found")
+            btn.click()
             sleep(15)
-            self.driver.find_element(By.ID, 'onetrust-close-btn-container').click()
-        except:
-            print("Email or password was given incorrect!")
+            one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=True)
+            if not one_trust_btn:
+                raise NoSuchElementException("Onetrust btn container couldn't be found")
+            one_trust_btn.click()
+        except NoSuchElementException as e:
+            print("Login to VFS failed")
+            print(e)

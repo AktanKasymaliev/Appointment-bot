@@ -4,8 +4,10 @@ from time import sleep
 import boto3
 from pyvirtualdisplay import Display
 
-from bots.vfs_appointment_checker_bot import VFSAppointmentCheckerBot
 from bots.bot_configurations import load_conf
+from bots.support_funcs import send_request_to_get_all_applicants_data_endpoint
+from bots.vfs_appointment_checker_bot import VFSAppointmentCheckerBot
+
 
 from configparser import ConfigParser
 
@@ -20,14 +22,20 @@ s3_resource = boto3.resource(
     aws_secret_access_key=load_conf(config_parse, 'AWS', 'AWS_SECRET_ACCESS_KEY')
 )
 
+display = Display(visible=False, extra_args=[':25'], size=(2560, 1440)) 
+display.start()
 
 def main():
     """
     This module will be used to start a bot which will be running
     without depending on Django instance.
     """
-    display = Display(visible=False, extra_args=[':25'], size=(2560, 1440)) 
-    display.start()
+    # Check if we have applicants in our DB
+    applicants_data = send_request_to_get_all_applicants_data_endpoint()
+    if len(applicants_data) == 0:
+        print('No applicants. Bot has stopped.')
+        return
+    
     video_filename = 'recording.mp4'
     recorder = subprocess.Popen(['/usr/bin/ffmpeg', '-f', 'x11grab', '-video_size',
                                 '2560x1440', '-framerate', '25', '-probesize',
@@ -40,7 +48,14 @@ def main():
         )
         checker.work()
     except Exception as e:
-        print('FAILED', e)
+        recorder.terminate()
+        sleep(7)
+        recorder.wait(timeout=20)
+        sleep(10)
+        print('FAILED. REASON:', e)
+        print('EXCEPTION NAME:', type(e).__name__)
+        print('Restarting')
+        main()
     finally:
         sleep(7)
         recorder.terminate()
@@ -48,9 +63,12 @@ def main():
         print('Closed recorder')
         recorder.wait(timeout=20)
         sleep(10)
-        s3_file_object = s3_resource.Object(
-            bucket_name=BUCKET_NAME, key='screenshot.png')
-        s3_file_object.upload_file('/tmp/' + 'screenshot.png')
+        try:
+            s3_file_object = s3_resource.Object(
+                bucket_name=BUCKET_NAME, key='screenshot.png')
+            s3_file_object.upload_file('/tmp/' + 'screenshot.png')
+        except FileNotFoundError:
+            print('Screenshot file not found')
         s3_file_object = s3_resource.Object(
             bucket_name=BUCKET_NAME, key=video_filename)
         s3_file_object.upload_file('/tmp/' + video_filename)
