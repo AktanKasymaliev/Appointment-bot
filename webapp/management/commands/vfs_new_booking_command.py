@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand
+
 from bots.fill_out_appointment_bot import FillOutAppointmentBot
+from bots.support_funcs import intialisate_bot_with_firewall_bypass
 
 class Command(BaseCommand):
     help = 'Start vfs creator bot'
@@ -33,13 +35,13 @@ class Command(BaseCommand):
             "VISA_CENTRE": "Poland Visa Application Centre - Ankara",
         }
 
-        ap = FillOutAppointmentBot(
+        intialisate_bot_with_firewall_bypass(
+            FillOutAppointmentBot,
             email='dr.derekwerner5036@outlook.com',
             password='bBc2CUQuu!4R',
             person=person,
-            use_proxy=False,
+            use_proxy=True,
         )
-        ap.work()
 
     def add_arguments(self, parser) -> None:
         parser.add_argument (

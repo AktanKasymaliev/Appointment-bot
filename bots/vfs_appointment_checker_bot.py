@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
-from bots.support_funcs import  return_visa_centre, send_request_to_start_filler_bot_endpoint
+from bots.support_funcs import  is_firewall_blocked, return_visa_centre, send_request_to_start_filler_bot_endpoint
 
 
 class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
@@ -92,41 +92,43 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
 
     def work(self) -> Any:
         self.login(self.email, self.password)
-        sleep(7)
-        # Start New Booking button
-        self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
-        sleep(2)
-        self.check()
-
-    def check(self):
-        current_visa_centre = self.__get_current_centre()
-        current_subcategory = self.__get_current_subcategory()
-        if current_visa_centre[0] == "END":
-            self.driver.quit()
-            return
-
-        self.choose_visa_centre(current_visa_centre)
-
-        self.choose_visa_category()
-        
-        self.choose_visa_subcategory(current_subcategory)
-        sleep(3)
-
-        message = self.driver.find_element(By.XPATH, "//div[4]/div").text
-        if message in self.NO_APPOINTMENT:
-            self.__next_visa()
+        if not is_firewall_blocked(self.driver):
+            sleep(7)
+            # Start New Booking button
+            self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
+            sleep(2)
             self.check()
 
-        self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(4)
-        WebDriverWait(self.driver, 10).until(
-            ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
-        ).click() 
-        sleep(7)
-        self.fill_person_data_out(self.FAKE_PERSON)
-        sleep(10)
-        self.__check_appointment_time()
-        sleep(1000)
+    def check(self):
+        if not is_firewall_blocked(self.driver):
+            current_visa_centre = self.__get_current_centre()
+            current_subcategory = self.__get_current_subcategory()
+            if current_visa_centre[0] == "END":
+                self.driver.quit()
+                return
+
+            self.choose_visa_centre(current_visa_centre)
+
+            self.choose_visa_category()
+            
+            self.choose_visa_subcategory(current_subcategory)
+            sleep(3)
+
+            message = self.driver.find_element(By.XPATH, "//div[4]/div").text
+            if message in self.NO_APPOINTMENT:
+                self.__next_visa()
+                self.check()
+
+            self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+            sleep(4)
+            WebDriverWait(self.driver, 10).until(
+                ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
+            ).click() 
+            sleep(7)
+            self.fill_person_data_out(self.FAKE_PERSON)
+            sleep(10)
+            self.__check_appointment_time()
+            sleep(1000)
 
     def generate_report(self) -> Any:
         return super().generate_report()

@@ -62,6 +62,14 @@ class Bot(ABC):
         Method that returns final conclusion of work
         """ 
         pass
+
+    def __start_or_reload_proxy(self, options):
+        proxy = Proxie(
+            self.USERNAME, self.PASSWORD,
+            self.HOST, self.PORT
+        )
+        proxy.make_proxy()
+        options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
     
     def create_driver(self, use_proxy: bool = False) -> uc.Chrome:
         """
@@ -71,14 +79,9 @@ class Bot(ABC):
         d['goog:loggingPrefs'] = { 'browser': 'ALL', 'driver': 'ALL' }
 
         options = uc.ChromeOptions()
-        options.binary_location = '/opt/chrome/google-chrome'
+        # options.binary_location = '/opt/chrome/google-chrome'
         if use_proxy:
-            proxy = Proxie(
-                self.USERNAME, self.PASSWORD,
-                self.HOST, self.PORT
-            )
-            proxy.make_proxy()
-            options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
+            self.__start_or_reload_proxy(options)
             
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-setuid-sandbox")
@@ -87,7 +90,7 @@ class Bot(ABC):
         options.add_argument("--disable-dev-tools")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
-        options.add_argument("--single-process")
+        # options.add_argument("--single-process")
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-site-isolation-trials")
         options.add_argument("--disable-application-cache")
@@ -97,7 +100,7 @@ class Bot(ABC):
         options.set_capability("excludeSwitches", ["enable-automation"])
         options.add_argument("--no-zygote")
         
-        options.add_argument(f"--user-data-dir=/tmp/user-data-dir")
+        # options.add_argument(f"--user-data-dir=/tmp/user-data-dir")
         options.add_argument(f"--data-path=/tmp/data-path")
         options.add_argument(f"--disk-cache-dir=/tmp/disk-cache-dir/")
         options.add_argument("--remote-debugging-port=9230")

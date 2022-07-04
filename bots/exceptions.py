@@ -1,0 +1,2 @@
+class FireWallException(Exception):
+    pass

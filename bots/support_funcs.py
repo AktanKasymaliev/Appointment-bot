@@ -7,6 +7,8 @@ import requests
 
 from .bot_token import CHAT_ID, TOKEN
 from .bot_configurations import load_conf, bot_config_parser_on
+from .bot_managing import Bot
+from bots.exceptions import FireWallException
 
 CONFIG_PARSE = bot_config_parser_on()
 DJANGO_CONF = "DJANGO"
@@ -123,3 +125,21 @@ def send_request_to_start_filler_bot_endpoint(
 
     response = requests.get(url)
     return return_data(response)
+
+def is_firewall_blocked(driver):
+    messages = (
+                "Sorry, we've been unable to progress with your request right now.", 
+                "cleared your cache memory", 
+                "VPN"
+                )
+    path_of_url = 'page-not-found'
+    if driver.title in messages or path_of_url in driver.current_url:
+        raise FireWallException("Firewall blocked selenium!")
+    return False
+
+def intialisate_bot_with_firewall_bypass(bot_class: Bot, **optional):
+    try:
+        bot = bot_class(**optional)
+        bot.work()
+    except FireWallException:
+        intialisate_bot_with_firewall_bypass(bot_class, **optional)

@@ -43,14 +43,6 @@ class Command(BaseCommand):
             password=password
         )
 
-        #TODO доработать платежную систему, а так все работает!
-        # fill_out_appointment_bot.FillOutAppointmentBot(
-        #     email="michaelmckinney89586@outlook.com",
-        #     password="B6CnQLWTY$8O",
-        #     person=make_person_for_bot(applicant_id, "michaelmckinney89586@outlook.com", card_data),
-        #     use_proxy=True
-        # ).work()
-
         fill_out_appointment_bot.FillOutAppointmentBot(
             email=email,
             password=password,
