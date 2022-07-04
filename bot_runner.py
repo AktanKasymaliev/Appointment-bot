@@ -22,6 +22,8 @@ s3_resource = boto3.resource(
     aws_secret_access_key=load_conf(config_parse, 'AWS', 'AWS_SECRET_ACCESS_KEY')
 )
 
+display = Display(visible=False, extra_args=[':25'], size=(2560, 1440)) 
+display.start()
 
 def main():
     """
@@ -33,8 +35,7 @@ def main():
     if len(applicants_data) == 0:
         print('No applicants. Bot has stopped.')
         return
-    display = Display(visible=False, extra_args=[':25'], size=(2560, 1440)) 
-    display.start()
+    
     video_filename = 'recording.mp4'
     recorder = subprocess.Popen(['/usr/bin/ffmpeg', '-f', 'x11grab', '-video_size',
                                 '2560x1440', '-framerate', '25', '-probesize',
@@ -47,7 +48,14 @@ def main():
         )
         checker.work()
     except Exception as e:
-        print('FAILED', e)
+        recorder.terminate()
+        sleep(7)
+        recorder.wait(timeout=20)
+        sleep(10)
+        print('FAILED. REASON:', e)
+        print('EXCEPTION NAME:', type(e).__name__)
+        print('Restarting')
+        main()
     finally:
         sleep(7)
         recorder.terminate()
