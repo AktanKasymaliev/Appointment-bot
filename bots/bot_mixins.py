@@ -212,7 +212,7 @@ class LoginMixin:
     @is_firewall_blocked_at_the_start
     def __click_new_booking(self):
         self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
-        sleep(4)
+        sleep(6)
 
     @is_firewall_blocked_at_the_end
     def login(self, email: str, password: str) -> None:
