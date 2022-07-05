@@ -7,8 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
-from bots.exceptions import FireWallException
-from bots.support_funcs import  is_firewall_blocked, return_visa_centre, send_request_to_start_filler_bot_endpoint
+from bots.support_funcs import (is_firewall_blocked_at_the_end, return_visa_centre, 
+                send_request_to_start_filler_bot_endpoint, is_firewall_blocked_at_the_start)
 
 
 class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
@@ -47,7 +47,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
             self.current_visa_index += 1
             self.current_visa = self.VISA_CENTRES_AND_SUBCATEGORIES[self.current_visa_index]
         else:
-            # return 'All visa centres viewed'
+
             self.current_visa_index  = 0 
             self.current_visa = self.VISA_CENTRES_AND_SUBCATEGORIES[self.current_visa_index]
 
@@ -57,6 +57,8 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
     def __get_current_subcategory(self) -> str:
         return self.current_visa[1]
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def __check_appointment_time(self):
         #Continue button
         self.driver.find_element(
@@ -91,45 +93,41 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         )
         sleep(1000)
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def work(self) -> Any:
         self.login(self.email, self.password)
-        if not is_firewall_blocked(self.driver):
-            sleep(7)
-            # Start New Booking button
-            self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
-            sleep(2)
+        sleep(7)
+        self.check()
+
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
+    def check(self):
+        current_visa_centre = self.__get_current_centre()
+        current_subcategory = self.__get_current_subcategory()
+        if current_visa_centre[0] == "END":
+            self.driver.quit()
+            return
+
+        self.choose_visa_centre(current_visa_centre)
+
+        self.choose_visa_category()
+        
+        self.choose_visa_subcategory(current_subcategory)
+        sleep(3)
+
+        message = self.driver.find_element(By.XPATH, "//div[4]/div").text
+        if message in self.NO_APPOINTMENT:
+            self.__next_visa()
             self.check()
 
-    def check(self):
-        if not is_firewall_blocked(self.driver):
-            current_visa_centre = self.__get_current_centre()
-            current_subcategory = self.__get_current_subcategory()
-            if current_visa_centre[0] == "END":
-                self.driver.quit()
-                return
-
-            self.choose_visa_centre(current_visa_centre)
-
-            self.choose_visa_category()
-            
-            self.choose_visa_subcategory(current_subcategory)
-            sleep(3)
-
-            message = self.driver.find_element(By.XPATH, "//div[4]/div").text
-            if message in self.NO_APPOINTMENT:
-                self.__next_visa()
-                self.check()
-
-            self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-            sleep(4)
-            WebDriverWait(self.driver, 10).until(
-                ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
-            ).click() 
-            sleep(7)
-            self.fill_person_data_out(self.FAKE_PERSON)
-            sleep(10)
-            self.__check_appointment_time()
-            sleep(1000)
+        self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+        sleep(4)
+        self.click_submit_on_categories()
+        self.fill_person_data_out(self.FAKE_PERSON)
+        sleep(10)
+        self.__check_appointment_time()
+        sleep(1000)
 
     def generate_report(self) -> Any:
         return super().generate_report()
