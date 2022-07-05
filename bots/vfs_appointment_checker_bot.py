@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
+from bots.exceptions import FireWallException
 from bots.support_funcs import  is_firewall_blocked, return_visa_centre, send_request_to_start_filler_bot_endpoint
 
 

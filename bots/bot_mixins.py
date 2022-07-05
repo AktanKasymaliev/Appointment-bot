@@ -42,7 +42,6 @@ class FormFillerMixin:
         ).click()
         if not is_firewall_blocked(self.driver):
             sleep(6)
-
             self.__mat_select(visa_centre)
             sleep(6)
 
@@ -53,7 +52,6 @@ class FormFillerMixin:
         ).click()
         if not is_firewall_blocked(self.driver):
             sleep(6)
-            
             self.__mat_select(self.VISA_CATEGORY)
             sleep(6)
 

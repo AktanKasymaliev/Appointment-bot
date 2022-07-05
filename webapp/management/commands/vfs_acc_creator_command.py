@@ -1,13 +1,13 @@
 from django.core.management.base import BaseCommand
 
-from bots.support_funcs import intialisate_bot_with_firewall_bypass
+from bots.support_funcs import intialize_bot_with_firewall_bypass
 from bots.vfs_account_creator import VFSAccountCreate
 
 class Command(BaseCommand):
     help = 'Start vfs creator bot'
 
     def handle(self, *args, **options):
-        intialisate_bot_with_firewall_bypass(
+        intialize_bot_with_firewall_bypass(
             VFSAccountCreate,
             email='outlook@outlook.com',
             password='password1234',

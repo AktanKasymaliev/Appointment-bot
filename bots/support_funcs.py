@@ -143,12 +143,14 @@ def is_firewall_blocked(driver):
         raise FireWallException("Firewall blocked selenium!")
     return False
 
-def intialisate_bot_with_firewall_bypass(bot_class: Bot, **optional):
+def intialize_bot_with_firewall_bypass(bot_class: Bot, **optional):
     try:
         bot = bot_class(**optional)
         bot.work()
     except FireWallException:
-        intialisate_bot_with_firewall_bypass(bot_class, **optional)
+        bot.driver.quit()
+        print("Firewall blocked selenium\nTrying to recreate driver.")
+        intialize_bot_with_firewall_bypass(bot_class, **optional)
 
 def find_element_with_retry_base(driver, element_locator, by, refresh):
     wait_time = 10
