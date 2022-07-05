@@ -1,13 +1,21 @@
 from typing import Any
 from time import sleep
 
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 from bots.bot_managing import Bot
-from bots.bot_mixins import FormFillerMixin, LoginMixin
-from bots.support_funcs import (is_firewall_blocked_at_the_end, return_visa_centre, 
-                send_request_to_start_filler_bot_endpoint, is_firewall_blocked_at_the_start)
-from bots.constants import HEAVY_TIMEOUT, LIGHT_TIMEOUT, MEDIUM_TIMEOUT
+
+from bots.bot_mixins import FormFillerMixin
+from bots.bot_mixins import LoginMixin
+from bots.constants import HEAVY_TIMEOUT
+from bots.constants import LIGHT_TIMEOUT
+from bots.constants import MEDIUM_TIMEOUT
+from bots.support_funcs import  is_firewall_blocked_at_the_end
+from bots.support_funcs import  is_firewall_blocked_at_the_start
+from bots.support_funcs import  find_element_with_retry_by_xpath
+from bots.support_funcs import  return_visa_centre
+from bots.support_funcs import  send_request_to_start_filler_bot_endpoint
 
 
 class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
@@ -105,13 +113,11 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         current_visa_centre = self.__get_current_centre()
         current_subcategory = self.__get_current_subcategory()
         if current_visa_centre[0] == "END":
+            print("No applicants! Closing.")
             self.driver.quit()
             return
-
         self.choose_visa_centre(current_visa_centre)
-
         self.choose_visa_category()
-        
         self.choose_visa_subcategory(current_subcategory)
         sleep(LIGHT_TIMEOUT)
 

@@ -8,9 +8,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 
-from bots.support_funcs import (find_element_with_retry_by_class, find_element_with_retry_by_id,
-         is_firewall_blocked_at_the_end, is_firewall_blocked_at_the_start)
-from bots.constants import HEAVY_TIMEOUT, LIGHT_TIMEOUT, MEDIUM_TIMEOUT
+from bots.constants import HEAVY_TIMEOUT
+from bots.constants import LIGHT_TIMEOUT
+from bots.constants import MEDIUM_TIMEOUT
+from bots.support_funcs import find_element_with_retry_by_id
+from bots.support_funcs import find_element_with_retry_by_class
+from bots.support_funcs import find_element_with_retry_by_xpath
+from bots.support_funcs import is_firewall_blocked_at_the_end
+from bots.support_funcs import is_firewall_blocked_at_the_start
 
 
 class FormFillerMixin:
@@ -54,10 +59,12 @@ class FormFillerMixin:
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def choose_visa_centre(self, visa_centre: str) -> None:
+        sleep(3)
         #DropDown click
-        WebDriverWait(self.driver, 10).until(
-            ec.presence_of_element_located((By.XPATH, "//mat-form-field/div/div/div[3]"))
-        ).click()
+        visa_center_dropdown = find_element_with_retry_by_xpath(self.driver, "//mat-form-field/div/div/div[3]")
+        if not visa_center_dropdown:
+            raise NoSuchElementException("Visa center dropdown couldn't be found")
+        visa_center_dropdown.click()
         sleep(MEDIUM_TIMEOUT)
         self.__mat_select(visa_centre)
 
@@ -203,7 +210,8 @@ class FormFillerMixin:
         # Submitt btn
         self.driver.find_element(By.IDm, 'btnSbmt').click()
         sleep(1000)
-    
+
+
 class LoginMixin:
     """Login Form Filler"""
     
@@ -234,7 +242,7 @@ class LoginMixin:
                 raise NoSuchElementException("'Sign In' button couldn't be found")
             btn.click()
             sleep(HEAVY_TIMEOUT)
-            one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=True)
+            one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=False)
             if not one_trust_btn:
                 raise NoSuchElementException("Onetrust btn container couldn't be found")
             one_trust_btn.click()
