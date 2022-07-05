@@ -1,8 +1,11 @@
 import subprocess
 from time import sleep
+from uuid import uuid4
 
 import boto3
 from pyvirtualdisplay import Display
+
+from selenium.common.exceptions import WebDriverException
 
 from bots.bot_configurations import load_conf
 from bots.support_funcs import send_request_to_get_all_applicants_data_endpoint
@@ -25,6 +28,30 @@ s3_resource = boto3.resource(
 display = Display(visible=False, extra_args=[':25'], size=(2560, 1440)) 
 display.start()
 
+
+def upload_files(video_filename, recorder):
+    recorder.terminate()
+    sleep(7)
+    recorder.wait(timeout=20)
+    sleep(10)
+    try:
+            s3_file_object = s3_resource.Object(
+                bucket_name=BUCKET_NAME, key='screenshot.png')
+            s3_file_object.upload_file('/tmp/' + 'screenshot.png')
+    except FileNotFoundError:
+        print('Screenshot file not found')
+    s3_file_object = s3_resource.Object(
+        bucket_name=BUCKET_NAME, key=video_filename)
+    s3_file_object.upload_file('/tmp/' + video_filename)
+
+
+def rerun(e):
+    print('FAILED. REASON:', e)
+    print('EXCEPTION NAME:', type(e).__name__)
+    print('Restarting')
+    main()
+
+
 def main():
     """
     This module will be used to start a bot which will be running
@@ -36,7 +63,7 @@ def main():
         print('No applicants. Bot has stopped.')
         return
     
-    video_filename = 'recording.mp4'
+    video_filename = f'recording-{str(uuid4())}.mp4'
     recorder = subprocess.Popen(['/usr/bin/ffmpeg', '-f', 'x11grab', '-video_size',
                                 '2560x1440', '-framerate', '25', '-probesize',
                                 '10M', '-i', ':25', '-y', '/tmp/' + video_filename])
@@ -47,31 +74,25 @@ def main():
             use_proxy=True,
         )
         checker.work()
+    except WebDriverException as wde:
+        # When this exception occurs, usually Chrome is not available
+        # so there's no point to record anything
+        checker.driver.close()
+        checker.driver.quit()
+        print('@@@@@ in WebDriverException\n')
+        upload_files(video_filename, recorder)
+        rerun(wde)
+
     except Exception as e:
-        recorder.terminate()
-        sleep(7)
-        recorder.wait(timeout=20)
-        sleep(10)
-        print('FAILED. REASON:', e)
-        print('EXCEPTION NAME:', type(e).__name__)
-        print('Restarting')
-        main()
+        checker.driver.close()
+        checker.driver.quit()
+        print('@@@@@ in Exception\n')
+        upload_files(video_filename, recorder)
+        rerun(e)
+
     finally:
-        sleep(7)
-        recorder.terminate()
-        sleep(7)
-        print('Closed recorder')
-        recorder.wait(timeout=20)
-        sleep(10)
-        try:
-            s3_file_object = s3_resource.Object(
-                bucket_name=BUCKET_NAME, key='screenshot.png')
-            s3_file_object.upload_file('/tmp/' + 'screenshot.png')
-        except FileNotFoundError:
-            print('Screenshot file not found')
-        s3_file_object = s3_resource.Object(
-            bucket_name=BUCKET_NAME, key=video_filename)
-        s3_file_object.upload_file('/tmp/' + video_filename)
+        # upload files for debugging
+        upload_files(video_filename, recorder)
 
 if __name__ == '__main__':
     main()
