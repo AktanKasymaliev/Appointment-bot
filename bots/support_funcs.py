@@ -5,10 +5,12 @@ import polling
 
 import requests
 
+from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import ElementClickInterceptedException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 
 from .bot_token import CHAT_ID, TOKEN
 from .bot_configurations import load_conf, bot_config_parser_on
@@ -176,7 +178,7 @@ def intialize_bot_with_firewall_bypass(bot_class: Bot, **optional):
         intialize_bot_with_firewall_bypass(bot_class, **optional)
 
 def find_element_with_retry_base(driver, element_locator, by, refresh):
-    wait_time = 10
+    wait_time = 20
     retries = 1
     while retries <= 3:
         try:
@@ -187,6 +189,12 @@ def find_element_with_retry_base(driver, element_locator, by, refresh):
             wait_time += 5
             retries += 1
             refresh and driver.refresh()
+        except ElementClickInterceptedException:
+            wait_time += 5
+            retries += 1
+        except StaleElementReferenceException:
+            wait_time += 5
+            retries += 1
 
 
 def find_element_with_retry_by_id(driver, element_id, refresh=False):
@@ -195,3 +203,7 @@ def find_element_with_retry_by_id(driver, element_id, refresh=False):
 
 def find_element_with_retry_by_class(driver, element_class, refresh=False):
     return find_element_with_retry_base(driver, element_class, By.CLASS_NAME, refresh)
+
+
+def find_element_with_retry_by_xpath(driver, element_xpath, refresh=False):
+    return find_element_with_retry_base(driver, element_xpath, By.XPATH, refresh)
