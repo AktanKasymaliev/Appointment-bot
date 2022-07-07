@@ -8,8 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 
-from bots.support_funcs import find_element_with_retry_by_id
-from bots.support_funcs import find_element_with_retry_by_class
+from bots.support_funcs import (find_element_with_retry_by_class, find_element_with_retry_by_id,
+         is_firewall_blocked_at_the_end, is_firewall_blocked_at_the_start)
 
 
 class FormFillerMixin:
@@ -17,11 +17,23 @@ class FormFillerMixin:
 
     VISA_CATEGORY = "National Visa (Type D) / Uzun Donem  / Wiza typu D"
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def __click_button(self, class_name: str) -> None:
         self.driver.find_element(
             By.XPATH, "//button[@class='{}']/span".format(class_name)
             ).click()
     
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
+    def click_submit_on_categories(self):
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
+        ).click() 
+        sleep(7)
+    
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def __mat_select(self, arg: str) -> None:
         """
         It clicks on the dropdown menu, then clicks on the option that matches the argument
@@ -34,28 +46,32 @@ class FormFillerMixin:
                 "//mat-option/span[contains(text(), '{}')]".format(arg)
             ).click()
         except NoSuchElementException:
-            raise Exception("Visa centre not found: {}".format(arg))
+            raise NoSuchElementException("Visa centre not found: {}".format(arg))
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def choose_visa_centre(self, visa_centre: str) -> None:
         #DropDown click
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//mat-form-field/div/div/div[3]"))
         ).click()
         sleep(6)
-
         self.__mat_select(visa_centre)
         sleep(6)
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def choose_visa_category(self) -> None:
         #DropDown click
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-3']"))
         ).click()
         sleep(6)
-        
         self.__mat_select(self.VISA_CATEGORY)
         sleep(6)
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def choose_visa_subcategory(self, subcategory: str) -> None:
         #DropDown click
         WebDriverWait(self.driver, 10).until(
@@ -65,6 +81,8 @@ class FormFillerMixin:
         self.__mat_select(subcategory)
         sleep(7)
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def fill_person_data_out(self, person: dict) -> None:
         #First name
         self.driver.find_element(By.ID, 'mat-input-2').send_keys(person["FIRST_NAME"])
@@ -76,7 +94,7 @@ class FormFillerMixin:
         self.driver.find_element(
             By.XPATH,
             "//div[@id='mat-select-value-7']"
-             ).click()
+            ).click()
         sleep(4)
         self.__mat_select(person["GENDER"])
         sleep(4)
@@ -111,7 +129,9 @@ class FormFillerMixin:
         self.__click_button(
             "mat-focus-indicator mat-stroked-button mat-button-base btn btn-block btn-brand-orange mat-btn-lg"
         )
-    
+
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def select_appointment_book(self, person: dict):
         #Continue button
         self.__click_button(
@@ -149,6 +169,8 @@ class FormFillerMixin:
             "mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-raised-button mat-button-base"
         )
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def book_review(self):
         #Book Review section
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
@@ -160,7 +182,6 @@ class FormFillerMixin:
         )
     
     def fill_bank_data_out(self, person: dict):
-        
         # Card Num
         self.driver.find_element(By.NAME, 'pan').send_keys(person["cart_num"])
         sleep(2)
@@ -188,6 +209,12 @@ class LoginMixin:
     
     URL = "https://visa.vfsglobal.com/tur/en/pol/login"
 
+    @is_firewall_blocked_at_the_start
+    def __click_new_booking(self):
+        self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
+        sleep(6)
+
+    @is_firewall_blocked_at_the_end
     def login(self, email: str, password: str) -> None:
         self.driver.get(self.URL)
         sleep(15)
@@ -211,6 +238,7 @@ class LoginMixin:
             if not one_trust_btn:
                 raise NoSuchElementException("Onetrust btn container couldn't be found")
             one_trust_btn.click()
+            self.__click_new_booking()
         except NoSuchElementException as e:
             print("Login to VFS failed")
             print(e)

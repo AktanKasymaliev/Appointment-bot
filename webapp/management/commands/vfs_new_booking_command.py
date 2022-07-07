@@ -1,45 +1,23 @@
 from django.core.management.base import BaseCommand
+
 from bots.fill_out_appointment_bot import FillOutAppointmentBot
+from bots.support_funcs import get_card, intialize_bot_with_firewall_bypass, make_person_for_bot
 
 class Command(BaseCommand):
-    help = 'Start vfs creator bot'
+    help = 'Start vfs filler bot'
 
     def handle(self, *args, **options):
-        #Example Data of Person:
-        person = {
-            #personality
-            "FIRST_NAME": "Joe",
-            "LAST_NAME": "Baidenn",
-            "GENDER": "Male",
-            "DATE_OF_BIRTH": "05061997", #without separetors
-            "CITIZIENSHIP": "Kyrgyzstan",
-            "PASSPORT_NUMBER": '20506200414356',
-            "Passport_Expirty_Date": '20082030', #without separetors
-            "PHONE_CODE": '996',
-            "PHONE_NUMBER": '1234567891',
-            "EMAIL":'gmail@gmail.com',
-
-            #cart info
-            "cart_num": '4123123123123',
-            "expiry_month": 1,
-            "expiry_year": 24,
-            "cvv": 111,
-            "name_and_surname": "Joe Baidenn",
-            "address": "Pushkin\'s street...)",
-            "city_district_postcode": "Moscow, Lublino disctrict, 000000",
-            
-            #free appointment window
-            "FREE_WINDOW": 30,
-            "VISA_CENTRE": "Poland Visa Application Centre - Ankara",
-        }
-
-        ap = FillOutAppointmentBot(
-            email='dr.derekwerner5036@outlook.com',
-            password='bBc2CUQuu!4R',
-            person=person,
-            use_proxy=False,
+        applicant_id = options["applicant_id"]
+        card_data = get_card()
+        email = 'dr.derekwerner5036@outlook.com'
+        password = 'bBc2CUQuu!4R'
+        intialize_bot_with_firewall_bypass(
+            FillOutAppointmentBot,
+            email=email,
+            password=password,
+            person=make_person_for_bot(applicant_id, email, card_data),
+            use_proxy=True,
         )
-        ap.work()
 
     def add_arguments(self, parser) -> None:
         parser.add_argument (

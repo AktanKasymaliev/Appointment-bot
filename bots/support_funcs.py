@@ -12,6 +12,8 @@ from selenium.common.exceptions import TimeoutException
 
 from .bot_token import CHAT_ID, TOKEN
 from .bot_configurations import load_conf, bot_config_parser_on
+from .bot_managing import Bot
+from bots.exceptions import FireWallException
 
 
 CONFIG_PARSE = bot_config_parser_on()
@@ -130,6 +132,48 @@ def send_request_to_start_filler_bot_endpoint(
     response = requests.get(url)
     return return_data(response)
 
+def is_firewall_blocked_at_the_end(func):
+    def wrapper(*args, **kwargs):
+        driver = args[0].driver
+        func_result = func(*args, **kwargs)
+        messages = (
+                    "Sorry, we've been unable to progress with your request right now.", 
+                    "cleared your cache memory", 
+                    "VPN"
+                    )
+        path_of_url = 'page-not-found'
+
+        if driver.title in messages and path_of_url in driver.current_url:
+            raise FireWallException("Firewall blocked selenium!")
+        return func_result
+
+    return wrapper
+
+def is_firewall_blocked_at_the_start(func):
+    def wrapper(*args, **kwargs):
+        driver = args[0].driver
+        messages = (
+                    "Sorry, we've been unable to progress with your request right now.", 
+                    "cleared your cache memory", 
+                    "VPN"
+                    )
+        path_of_url = 'page-not-found'
+
+        if driver.title in messages and path_of_url in driver.current_url:
+            raise FireWallException("Firewall blocked selenium!")
+        return func(*args, **kwargs)
+
+    return wrapper
+
+def intialize_bot_with_firewall_bypass(bot_class: Bot, **optional):
+    try:
+        bot = bot_class(**optional)
+        bot.work()
+    except FireWallException:
+        bot.driver.quit() 
+        del bot
+        print("Firewall blocked selenium\nTrying to recreate driver...")
+        intialize_bot_with_firewall_bypass(bot_class, **optional)
 
 def find_element_with_retry_base(driver, element_locator, by, refresh):
     wait_time = 10

@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
-
+from bots.support_funcs import is_firewall_blocked_at_the_end, is_firewall_blocked_at_the_start
 
 class FillOutAppointmentBot(Bot, FormFillerMixin, LoginMixin):
     """Filling Appointment Data Bot"""
@@ -20,14 +20,11 @@ class FillOutAppointmentBot(Bot, FormFillerMixin, LoginMixin):
         self.password = password
         self.person = person
 
+    @is_firewall_blocked_at_the_start
+    @is_firewall_blocked_at_the_end
     def work(self) -> Any:
         self.login(self.email, self.password)
         sleep(7)
-
-        # Start New Booking button
-        self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
-        sleep(4)
-
         self.choose_visa_centre(self.person["VISA_CENTRE"])
 
         self.choose_visa_category()
@@ -37,10 +34,7 @@ class FillOutAppointmentBot(Bot, FormFillerMixin, LoginMixin):
         # Submit btn for categories
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         sleep(4)
-        WebDriverWait(self.driver, 10).until(
-            ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
-        ).click() 
-        sleep(7)
+        self.click_submit_on_categories()
         # Next steps of new booking
         self.fill_person_data_out(self.person)
         sleep(10)

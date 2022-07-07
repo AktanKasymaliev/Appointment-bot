@@ -1,9 +1,10 @@
 from time import sleep
 from typing import Any
 
-from bots.bot_managing import Bot
-
 from selenium.webdriver.common.by import By
+
+from bots.bot_managing import Bot
+from bots.support_funcs import is_firewall_blocked_at_the_start, is_firewall_blocked_at_the_end
 
 class VFSAccountCreate(Bot):
     URL = "https://visa.vfsglobal.com/tur/en/pol/register"
@@ -13,6 +14,7 @@ class VFSAccountCreate(Bot):
         self.email = email
         self.password = password
 
+    @is_firewall_blocked_at_the_end
     def work(self) -> Any:
         data = {} # For collecting user credentials
         self.driver.get(self.URL)

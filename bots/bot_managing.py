@@ -62,6 +62,14 @@ class Bot(ABC):
         Method that returns final conclusion of work
         """ 
         pass
+
+    def __start_or_reload_proxy(self, options):
+        proxy = Proxie(
+            self.USERNAME, self.PASSWORD,
+            self.HOST, self.PORT
+        )
+        proxy.make_proxy()
+        options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
     
     def create_driver(self, use_proxy: bool = False) -> uc.Chrome:
         """
@@ -73,12 +81,7 @@ class Bot(ABC):
         options = uc.ChromeOptions()
         options.binary_location = '/opt/chrome/google-chrome'
         if use_proxy:
-            proxy = Proxie(
-                self.USERNAME, self.PASSWORD,
-                self.HOST, self.PORT
-            )
-            proxy.make_proxy()
-            options.add_argument('--load-extension={}'.format(proxy.give_the_path()))
+            self.__start_or_reload_proxy(options)
             
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-setuid-sandbox")

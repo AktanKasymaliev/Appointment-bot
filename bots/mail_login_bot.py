@@ -1,4 +1,3 @@
-
 from typing import Any
 from bots.outlook_account_mail_checker import OutlookCheckerMailBot
 
