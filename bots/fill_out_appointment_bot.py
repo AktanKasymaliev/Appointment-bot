@@ -1,13 +1,10 @@
 from typing import Any
 from time import sleep
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.ui import WebDriverWait
-
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
 from bots.support_funcs import is_firewall_blocked_at_the_end, is_firewall_blocked_at_the_start
+from bots.constants import HEAVY_TIMEOUT, LIGHT_TIMEOUT, MEDIUM_TIMEOUT
 
 class FillOutAppointmentBot(Bot, FormFillerMixin, LoginMixin):
     """Filling Appointment Data Bot"""
@@ -24,7 +21,7 @@ class FillOutAppointmentBot(Bot, FormFillerMixin, LoginMixin):
     @is_firewall_blocked_at_the_end
     def work(self) -> Any:
         self.login(self.email, self.password)
-        sleep(7)
+        sleep(MEDIUM_TIMEOUT)
         self.choose_visa_centre(self.person["VISA_CENTRE"])
 
         self.choose_visa_category()
@@ -33,15 +30,15 @@ class FillOutAppointmentBot(Bot, FormFillerMixin, LoginMixin):
         
         # Submit btn for categories
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         self.click_submit_on_categories()
         # Next steps of new booking
         self.fill_person_data_out(self.person)
-        sleep(10)
+        sleep(HEAVY_TIMEOUT)
         self.select_appointment_book(self.person)
-        sleep(5)
+        sleep(MEDIUM_TIMEOUT)
         self.book_review()
-        sleep(10)
+        sleep(HEAVY_TIMEOUT)
         self.fill_bank_data_out(self.person)
 
     def generate_report(self) -> Any:

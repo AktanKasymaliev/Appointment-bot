@@ -10,6 +10,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 
 from bots.support_funcs import (find_element_with_retry_by_class, find_element_with_retry_by_id,
          is_firewall_blocked_at_the_end, is_firewall_blocked_at_the_start)
+from bots.constants import HEAVY_TIMEOUT, LIGHT_TIMEOUT, MEDIUM_TIMEOUT
 
 
 class FormFillerMixin:
@@ -30,7 +31,7 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//section/form/mat-card/button/span"))
         ).click() 
-        sleep(7)
+        sleep(MEDIUM_TIMEOUT)
     
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
@@ -45,8 +46,10 @@ class FormFillerMixin:
             self.driver.find_element(By.XPATH,
                 "//mat-option/span[contains(text(), '{}')]".format(arg)
             ).click()
+            sleep(MEDIUM_TIMEOUT)
         except NoSuchElementException:
             raise NoSuchElementException("Visa centre not found: {}".format(arg))
+        
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
@@ -55,9 +58,8 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//mat-form-field/div/div/div[3]"))
         ).click()
-        sleep(6)
+        sleep(MEDIUM_TIMEOUT)
         self.__mat_select(visa_centre)
-        sleep(6)
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
@@ -66,9 +68,8 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-3']"))
         ).click()
-        sleep(6)
+        sleep(MEDIUM_TIMEOUT)
         self.__mat_select(self.VISA_CATEGORY)
-        sleep(6)
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
@@ -77,54 +78,53 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-5']"))
         ).click()
-        sleep(7)
+        sleep(MEDIUM_TIMEOUT)
         self.__mat_select(subcategory)
-        sleep(7)
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def fill_person_data_out(self, person: dict) -> None:
         #First name
         self.driver.find_element(By.ID, 'mat-input-2').send_keys(person["FIRST_NAME"])
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         #Last name
         self.driver.find_element(By.ID, 'mat-input-3').send_keys(person["LAST_NAME"])
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         # Gender select
         self.driver.find_element(
             By.XPATH,
             "//div[@id='mat-select-value-7']"
             ).click()
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         self.__mat_select(person["GENDER"])
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         #Date of Birth
         self.driver.find_element(By.ID, 'dateOfBirth').send_keys(person["DATE_OF_BIRTH"])
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         #Citizienship select
         self.driver.find_element(
             By.XPATH, "//div[@id='mat-select-value-9']"
             ).click()
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         self.__mat_select(person["CITIZIENSHIP"].upper())
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         #Passport number
         self.driver.find_element(By.ID, 'mat-input-4').send_keys(person["PASSPORT_NUMBER"])
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         #Passport Expirty Date
         self.driver.find_element(By.ID, 'passportExpirtyDate').send_keys(person["Passport_Expirty_Date"])
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(3)
+        sleep(LIGHT_TIMEOUT)
         # Phonenumber code without '+'
         self.driver.find_element(By.ID, 'mat-input-5').send_keys(person["PHONE_CODE"])
-        sleep(3)
+        sleep(LIGHT_TIMEOUT)
         # Phone number
         self.driver.find_element(By.ID, 'mat-input-6').send_keys(person["PHONE_NUMBER"])
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         # Email
         self.driver.find_element(By.ID, 'mat-input-7').send_keys(person["EMAIL"])
-        sleep(5)
+        sleep(MEDIUM_TIMEOUT)
         # Save button
         self.__click_button(
             "mat-focus-indicator mat-stroked-button mat-button-base btn btn-block btn-brand-orange mat-btn-lg"
@@ -137,15 +137,15 @@ class FormFillerMixin:
         self.__click_button(
             "mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-stroked-button mat-button-base"
         )
-        sleep(5)
+        sleep(MEDIUM_TIMEOUT)
         #Book Appointment section filling out
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(6)
+        sleep(MEDIUM_TIMEOUT)
         self.driver.find_element(
             By.XPATH,
             '//a[text()={}]'.format(person["FREE_WINDOW"])
             ).click()
-        sleep(5)
+        sleep(MEDIUM_TIMEOUT)
         #Trying to click on load more button if it works
         try:
             self.__click_button(
@@ -153,18 +153,18 @@ class FormFillerMixin:
             )
         except ElementNotInteractableException:
             pass
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
 
         #Random choicer of hours
         appointment_hours = self.driver.find_elements(
             By.XPATH,
             "//div[@class='ba-slot-box ng-star-inserted']"
             )
-        sleep(5)
+        sleep(MEDIUM_TIMEOUT)
         random.choice(appointment_hours).click()
 
         #Submitt btn
-        sleep(6)
+        sleep(MEDIUM_TIMEOUT)
         self.__click_button(
             "mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-raised-button mat-button-base"
         )
@@ -174,9 +174,9 @@ class FormFillerMixin:
     def book_review(self):
         #Book Review section
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(5)
+        sleep(MEDIUM_TIMEOUT)
         self.driver.find_element(By.ID, 'mat-checkbox-1').click()
-        sleep(5)
+        sleep(MEDIUM_TIMEOUT)
         self.__click_button(
             "mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-raised-button mat-button-base ng-star-inserted"
         )
@@ -184,22 +184,22 @@ class FormFillerMixin:
     def fill_bank_data_out(self, person: dict):
         # Card Num
         self.driver.find_element(By.NAME, 'pan').send_keys(person["cart_num"])
-        sleep(2)
+        sleep(LIGHT_TIMEOUT)
         # Card expyrity date
         Select(self.driver.find_element(By.NAME, 'Ecom_Payment_Card_ExpDate_Month')).select_by_value(person["expiry_month"])
-        sleep(2)
+        sleep(LIGHT_TIMEOUT)
         Select(self.driver.find_element(By.NAME, 'Ecom_Payment_Card_ExpDate_Year')).select_by_value(person["expiry_year"])
-        sleep(2)
+        sleep(LIGHT_TIMEOUT)
         # Person data
         self.driver.find_element(By.NAME, 'Fismi').send_keys(person["name_and_surname"])
-        sleep(2)
+        sleep(LIGHT_TIMEOUT)
         self.driver.find_element(By.NAME, 'Fadres').send_keys(person["address"])
-        sleep(2)
+        sleep(LIGHT_TIMEOUT)
         self.driver.find_element(By.NAME, 'Fadres2').send_keys(person["city_district_postcode"])
-        sleep(1)
+        sleep(LIGHT_TIMEOUT)
         #Check box
         self.driver.find_element(By.NAME, 'sameshipping').click()
-        sleep(2)
+        sleep(LIGHT_TIMEOUT)
         # Submitt btn
         self.driver.find_element(By.IDm, 'btnSbmt').click()
         sleep(1000)
@@ -212,28 +212,28 @@ class LoginMixin:
     @is_firewall_blocked_at_the_start
     def __click_new_booking(self):
         self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
-        sleep(6)
+        sleep(MEDIUM_TIMEOUT)
 
     @is_firewall_blocked_at_the_end
     def login(self, email: str, password: str) -> None:
         self.driver.get(self.URL)
-        sleep(15)
+        sleep(HEAVY_TIMEOUT)
         try:
             email_inp = find_element_with_retry_by_id(self.driver, 'mat-input-0', refresh=True)
             if not email_inp:
                 raise NoSuchElementException("Email input couldn't be found")
             email_inp.send_keys(email)
-            sleep(2)
+            sleep(LIGHT_TIMEOUT)
             pass_inp = find_element_with_retry_by_id(self.driver, 'mat-input-1', refresh=True)
             if not pass_inp:
                 raise NoSuchElementException("Password input couldn't be found")
             pass_inp.send_keys(password)
-            sleep(2)
+            sleep(LIGHT_TIMEOUT)
             btn = find_element_with_retry_by_class(self.driver, 'mat-btn-lg', refresh=True)
             if not btn:
                 raise NoSuchElementException("'Sign In' button couldn't be found")
             btn.click()
-            sleep(15)
+            sleep(HEAVY_TIMEOUT)
             one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=True)
             if not one_trust_btn:
                 raise NoSuchElementException("Onetrust btn container couldn't be found")
