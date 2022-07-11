@@ -2,13 +2,12 @@ from typing import Any
 from time import sleep
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.ui import WebDriverWait
 
 from bots.bot_managing import Bot
 from bots.bot_mixins import FormFillerMixin, LoginMixin
 from bots.support_funcs import (is_firewall_blocked_at_the_end, return_visa_centre, 
                 send_request_to_start_filler_bot_endpoint, is_firewall_blocked_at_the_start)
+from bots.constants import HEAVY_TIMEOUT, LIGHT_TIMEOUT, MEDIUM_TIMEOUT
 
 
 class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
@@ -65,12 +64,12 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
             By.XPATH,
             "//button[@class='mat-focus-indicator btn mat-btn-lg btn-block btn-brand-orange mat-stroked-button mat-button-base']/span"
             ).click()
-        sleep(6)
+        sleep(MEDIUM_TIMEOUT)
 
         month = self.driver.find_element(By.CLASS_NAME, 'fc-toolbar-title').text
 
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(6)
+        sleep(MEDIUM_TIMEOUT)
 
         a_tags_with_windows = self.driver.find_elements(
             By.XPATH,
@@ -97,7 +96,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
     @is_firewall_blocked_at_the_end
     def work(self) -> Any:
         self.login(self.email, self.password)
-        sleep(7)
+        sleep(MEDIUM_TIMEOUT)
         self.check()
 
     @is_firewall_blocked_at_the_start
@@ -114,7 +113,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         self.choose_visa_category()
         
         self.choose_visa_subcategory(current_subcategory)
-        sleep(3)
+        sleep(LIGHT_TIMEOUT)
 
         message = self.driver.find_element(By.XPATH, "//div[4]/div").text
         if message in self.NO_APPOINTMENT:
@@ -122,10 +121,10 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
             self.check()
 
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(4)
+        sleep(LIGHT_TIMEOUT)
         self.click_submit_on_categories()
         self.fill_person_data_out(self.FAKE_PERSON)
-        sleep(10)
+        sleep(HEAVY_TIMEOUT)
         self.__check_appointment_time()
         sleep(1000)
 

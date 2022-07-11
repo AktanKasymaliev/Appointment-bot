@@ -46,3 +46,7 @@ background_js = """
                     ['blocking']
         );
         """
+
+HEAVY_TIMEOUT=10
+LIGHT_TIMEOUT=3
+MEDIUM_TIMEOUT=7

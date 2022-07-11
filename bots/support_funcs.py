@@ -8,7 +8,7 @@ import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 
 from .bot_token import CHAT_ID, TOKEN
 from .bot_configurations import load_conf, bot_config_parser_on
@@ -136,14 +136,14 @@ def is_firewall_blocked_at_the_end(func):
     def wrapper(*args, **kwargs):
         driver = args[0].driver
         func_result = func(*args, **kwargs)
-        messages = (
-                    "Sorry, we've been unable to progress with your request right now.", 
-                    "cleared your cache memory", 
-                    "VPN"
-                    )
+        messages = """
+                    Sorry, we've been unable to progress with your request right now. 
+                    Please try again in one hour on a single device, after you have closed all your browser windows, 
+                    disconnected from a VPN and cleared your cache memory.
+                   """
         path_of_url = 'page-not-found'
 
-        if driver.title in messages and path_of_url in driver.current_url:
+        if driver.title == messages or path_of_url in driver.current_url:
             raise FireWallException("Firewall blocked selenium!")
         return func_result
 
@@ -152,14 +152,14 @@ def is_firewall_blocked_at_the_end(func):
 def is_firewall_blocked_at_the_start(func):
     def wrapper(*args, **kwargs):
         driver = args[0].driver
-        messages = (
-                    "Sorry, we've been unable to progress with your request right now.", 
-                    "cleared your cache memory", 
-                    "VPN"
-                    )
+        messages = """
+                    Sorry, we've been unable to progress with your request right now. 
+                    Please try again in one hour on a single device, after you have closed all your browser windows, 
+                    disconnected from a VPN and cleared your cache memory.
+                   """
         path_of_url = 'page-not-found'
 
-        if driver.title in messages and path_of_url in driver.current_url:
+        if driver.title == messages or path_of_url in driver.current_url:
             raise FireWallException("Firewall blocked selenium!")
         return func(*args, **kwargs)
 
@@ -169,8 +169,8 @@ def intialize_bot_with_firewall_bypass(bot_class: Bot, **optional):
     try:
         bot = bot_class(**optional)
         bot.work()
-    except FireWallException:
-        bot.driver.quit() 
+    except (FireWallException, ElementClickInterceptedException):
+        bot.driver.quit()
         del bot
         print("Firewall blocked selenium\nTrying to recreate driver...")
         intialize_bot_with_firewall_bypass(bot_class, **optional)
