@@ -219,7 +219,21 @@ class LoginMixin:
 
     @is_firewall_blocked_at_the_start
     def __click_new_booking(self):
-        booking_btn = find_element_with_retry_by_xpath(self.driver, '//section/div/div[2]/button/span', refresh=True)
+        # Wait until loading spinner is gone
+        print('Checking if the spinner is gone')
+        WebDriverWait(
+            self.driver, MEDIUM_TIMEOUT
+        ).until(
+            ec.invisibility_of_element_located(
+                (By.XPATH, "//div[@class='ngx-overlay loading-foreground']")
+            )
+        )
+        print('The spinner is gone. Now trying to click on the "Start New Booking" button.')
+        # and try to find the button
+        booking_btn = find_element_with_retry_by_xpath(
+            self.driver,
+            '//section/div/div[2]/button/span',
+            refresh=True)
         if not booking_btn:
             raise NoSuchElementException("Couldn't find the booking button")
         booking_btn.click()
