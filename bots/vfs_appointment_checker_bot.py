@@ -104,7 +104,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
     def work(self) -> Any:
         print('Started to work. Trying to login.')
         self.login(self.email, self.password)
-        print('Logged in. Trying to select visa center, category and subcategory.')
+        print('Trying to select visa center, category and subcategory.')
         self.check()
 
     @is_firewall_blocked_at_the_start
@@ -114,7 +114,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         print(f'Working with {current_visa_centre} visa center.')
         current_subcategory = self.__get_current_subcategory()
         if current_visa_centre[0] == "END":
-            print("No applicants! Closing.")
+            print("No applicants and hence no visa centers! Closing.")
             self.driver.quit()
             return
         self.choose_visa_centre(current_visa_centre)
