@@ -1,7 +1,6 @@
 from typing import Any
 from time import sleep
 
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 from bots.bot_managing import Bot
@@ -103,14 +102,16 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def work(self) -> Any:
+        print('Started to work. Trying to login.')
         self.login(self.email, self.password)
-        sleep(MEDIUM_TIMEOUT)
+        print('Logged in. Trying to select visa center, category and subcategory.')
         self.check()
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def check(self):
         current_visa_centre = self.__get_current_centre()
+        print(f'Working with {current_visa_centre} visa center.')
         current_subcategory = self.__get_current_subcategory()
         if current_visa_centre[0] == "END":
             print("No applicants! Closing.")
@@ -123,14 +124,19 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
 
         message = self.driver.find_element(By.XPATH, "//div[4]/div").text
         if message in self.NO_APPOINTMENT:
+            print('There are no appointment slots for this visa center. Trying to go with the next one.')
             self.__next_visa()
+            print('Set the next visa center. No checking again.')
             self.check()
 
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         sleep(LIGHT_TIMEOUT)
+        print('Trying to submit on categories.')
         self.click_submit_on_categories()
+        print('Trying to fill out the person form.')
         self.fill_person_data_out(self.FAKE_PERSON)
         sleep(HEAVY_TIMEOUT)
+        print('Trying to check appointment time.')
         self.__check_appointment_time()
         sleep(1000)
 

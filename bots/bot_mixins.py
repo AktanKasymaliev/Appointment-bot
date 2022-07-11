@@ -219,7 +219,10 @@ class LoginMixin:
 
     @is_firewall_blocked_at_the_start
     def __click_new_booking(self):
-        self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
+        booking_btn = find_element_with_retry_by_xpath(self.driver, '//section/div/div[2]/button/span', refresh=True)
+        if not booking_btn:
+            raise NoSuchElementException("Couldn't find the booking button")
+        booking_btn.click()
         sleep(MEDIUM_TIMEOUT)
 
     @is_firewall_blocked_at_the_end
@@ -243,9 +246,10 @@ class LoginMixin:
             btn.click()
             sleep(HEAVY_TIMEOUT)
             one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=False)
-            if not one_trust_btn:
-                raise NoSuchElementException("Onetrust btn container couldn't be found")
-            one_trust_btn.click()
+            if one_trust_btn:
+                one_trust_btn.click()
+            else:
+                print("Onetrust btn container couldn't be found. Continuing.")
             self.__click_new_booking()
         except NoSuchElementException as e:
             print("Login to VFS failed")

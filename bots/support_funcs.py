@@ -5,9 +5,9 @@ import polling
 
 import requests
 
-from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
@@ -186,15 +186,20 @@ def find_element_with_retry_base(driver, element_locator, by, refresh):
                 driver, wait_time).until(
                     ec.presence_of_element_located((by, element_locator)))
         except TimeoutException:
+            print('TimeoutException. Retrying.')
             wait_time += 5
             retries += 1
             refresh and driver.refresh()
         except ElementClickInterceptedException:
+            print('ElementClickInterceptedException. Retrying.')
             wait_time += 5
             retries += 1
         except StaleElementReferenceException:
+            print('StaleElementReferenceException. Retrying.')
             wait_time += 5
             retries += 1
+    print(f"Couldn't find element by {by} with locator {element_locator}")
+    return None
 
 
 def find_element_with_retry_by_id(driver, element_id, refresh=False):
