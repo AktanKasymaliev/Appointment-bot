@@ -16,6 +16,7 @@ from bots.support_funcs import find_element_with_retry_by_class
 from bots.support_funcs import find_element_with_retry_by_xpath
 from bots.support_funcs import is_firewall_blocked_at_the_end
 from bots.support_funcs import is_firewall_blocked_at_the_start
+from bots.support_funcs import random_sleep
 
 
 class FormFillerMixin:
@@ -48,24 +49,26 @@ class FormFillerMixin:
         :type arg: str
         """
         try:
-            self.driver.find_element(By.XPATH,
-                "//mat-option/span[contains(text(), '{}')]".format(arg)
-            ).click()
-            sleep(MEDIUM_TIMEOUT)
+            xpath = "//mat-option/span[contains(text(), '{}')]".format(arg)
+            opt = find_element_with_retry_by_xpath(self.driver, xpath)
+            if not opt:
+                raise NoSuchElementException(f"Coundn't select {arg}")
+            opt.click()
+            random_sleep()
         except NoSuchElementException:
-            raise NoSuchElementException("Visa centre not found: {}".format(arg))
-        
+            raise NoSuchElementException("Value not found: {}".format(arg))
+
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def choose_visa_centre(self, visa_centre: str) -> None:
-        sleep(3)
+        sleep(LIGHT_TIMEOUT)
         #DropDown click
         visa_center_dropdown = find_element_with_retry_by_xpath(self.driver, "//mat-form-field/div/div/div[3]")
         if not visa_center_dropdown:
             raise NoSuchElementException("Visa center dropdown couldn't be found")
         visa_center_dropdown.click()
-        sleep(MEDIUM_TIMEOUT)
+        random_sleep()
         self.__mat_select(visa_centre)
 
     @is_firewall_blocked_at_the_start
@@ -75,7 +78,7 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-3']"))
         ).click()
-        sleep(MEDIUM_TIMEOUT)
+        random_sleep()
         self.__mat_select(self.VISA_CATEGORY)
 
     @is_firewall_blocked_at_the_start
@@ -85,7 +88,7 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-5']"))
         ).click()
-        sleep(MEDIUM_TIMEOUT)
+        random_sleep()
         self.__mat_select(subcategory)
 
     @is_firewall_blocked_at_the_start

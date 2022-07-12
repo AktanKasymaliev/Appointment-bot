@@ -12,7 +12,7 @@ from bots.constants import LIGHT_TIMEOUT
 from bots.constants import MEDIUM_TIMEOUT
 from bots.support_funcs import  is_firewall_blocked_at_the_end
 from bots.support_funcs import  is_firewall_blocked_at_the_start
-from bots.support_funcs import  find_element_with_retry_by_xpath
+from bots.support_funcs import random_sleep
 from bots.support_funcs import  return_visa_centre
 from bots.support_funcs import  send_request_to_start_filler_bot_endpoint
 
@@ -34,9 +34,9 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         }
 
     NO_APPOINTMENT = (
-        "No appointment slots are currently available",
+        "No appointment slots are currently available. Please try another application centre if applicable",
         "Currently No slots are available for selected category, please confirm waitlist\nTerms and Conditions"
-            )
+    )
 
     def __init__(self, email: str, password: str, use_proxy: bool = False) -> None:
         super().__init__(use_proxy)
@@ -120,9 +120,9 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         self.choose_visa_centre(current_visa_centre)
         self.choose_visa_category()
         self.choose_visa_subcategory(current_subcategory)
-        sleep(LIGHT_TIMEOUT)
+        random_sleep()
 
-        message = self.driver.find_element(By.XPATH, "//div[4]/div").text
+        message = self.driver.find_element(By.XPATH, "//form/div[4]/div").text
         if message in self.NO_APPOINTMENT:
             print('There are no appointment slots for this visa center. Trying to go with the next one.')
             self.__next_visa()
@@ -130,7 +130,7 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
             self.check()
 
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(LIGHT_TIMEOUT)
+        random_sleep()
         print('Trying to submit on categories.')
         self.click_submit_on_categories()
         print('Trying to fill out the person form.')

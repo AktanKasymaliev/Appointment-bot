@@ -2,6 +2,8 @@ from datetime import datetime
 import json
 import subprocess
 import polling
+import random
+from time import sleep
 
 import requests
 
@@ -11,6 +13,9 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
+
+from bots.constants import HEAVY_TIMEOUT
+from bots.constants import MEDIUM_TIMEOUT
 
 from .bot_token import CHAT_ID, TOKEN
 from .bot_configurations import load_conf, bot_config_parser_on
@@ -212,3 +217,8 @@ def find_element_with_retry_by_class(driver, element_class, refresh=False):
 
 def find_element_with_retry_by_xpath(driver, element_xpath, refresh=False):
     return find_element_with_retry_base(driver, element_xpath, By.XPATH, refresh)
+
+
+def random_sleep():
+    sleep_time = random.randint(MEDIUM_TIMEOUT, HEAVY_TIMEOUT)
+    sleep(sleep_time)
