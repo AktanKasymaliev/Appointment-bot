@@ -4,10 +4,17 @@ from time import sleep
 from selenium.webdriver.common.by import By
 
 from bots.bot_managing import Bot
-from bots.bot_mixins import FormFillerMixin, LoginMixin
-from bots.support_funcs import (is_firewall_blocked_at_the_end, return_visa_centre, 
-                send_request_to_start_filler_bot_endpoint, is_firewall_blocked_at_the_start)
-from bots.constants import HEAVY_TIMEOUT, LIGHT_TIMEOUT, MEDIUM_TIMEOUT
+
+from bots.bot_mixins import FormFillerMixin
+from bots.bot_mixins import LoginMixin
+from bots.constants import HEAVY_TIMEOUT
+from bots.constants import LIGHT_TIMEOUT
+from bots.constants import MEDIUM_TIMEOUT
+from bots.support_funcs import  is_firewall_blocked_at_the_end
+from bots.support_funcs import  is_firewall_blocked_at_the_start
+from bots.support_funcs import random_sleep
+from bots.support_funcs import  return_visa_centre
+from bots.support_funcs import  send_request_to_start_filler_bot_endpoint
 
 
 class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
@@ -27,9 +34,9 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         }
 
     NO_APPOINTMENT = (
-        "No appointment slots are currently available",
+        "No appointment slots are currently available. Please try another application centre if applicable",
         "Currently No slots are available for selected category, please confirm waitlist\nTerms and Conditions"
-            )
+    )
 
     def __init__(self, email: str, password: str, use_proxy: bool = False) -> None:
         super().__init__(use_proxy)
@@ -95,36 +102,41 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def work(self) -> Any:
+        print('Started to work. Trying to login.')
         self.login(self.email, self.password)
-        sleep(MEDIUM_TIMEOUT)
+        print('Trying to select visa center, category and subcategory.')
         self.check()
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def check(self):
         current_visa_centre = self.__get_current_centre()
+        print(f'Working with {current_visa_centre} visa center.')
         current_subcategory = self.__get_current_subcategory()
         if current_visa_centre[0] == "END":
+            print("No applicants and hence no visa centers! Closing.")
             self.driver.quit()
             return
-
         self.choose_visa_centre(current_visa_centre)
-
         self.choose_visa_category()
-        
         self.choose_visa_subcategory(current_subcategory)
-        sleep(LIGHT_TIMEOUT)
+        random_sleep()
 
-        message = self.driver.find_element(By.XPATH, "//div[4]/div").text
+        message = self.driver.find_element(By.XPATH, "//form/div[4]/div").text
         if message in self.NO_APPOINTMENT:
+            print('There are no appointment slots for this visa center. Trying to go with the next one.')
             self.__next_visa()
+            print('Set the next visa center. No checking again.')
             self.check()
 
         self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-        sleep(LIGHT_TIMEOUT)
+        random_sleep()
+        print('Trying to submit on categories.')
         self.click_submit_on_categories()
+        print('Trying to fill out the person form.')
         self.fill_person_data_out(self.FAKE_PERSON)
         sleep(HEAVY_TIMEOUT)
+        print('Trying to check appointment time.')
         self.__check_appointment_time()
         sleep(1000)
 

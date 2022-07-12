@@ -2,13 +2,20 @@ from datetime import datetime
 import json
 import subprocess
 import polling
+import random
+from time import sleep
 
 import requests
 
+from selenium.common.exceptions import ElementClickInterceptedException
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
+
+from bots.constants import HEAVY_TIMEOUT
+from bots.constants import MEDIUM_TIMEOUT
 
 from .bot_token import CHAT_ID, TOKEN
 from .bot_configurations import load_conf, bot_config_parser_on
@@ -176,7 +183,7 @@ def intialize_bot_with_firewall_bypass(bot_class: Bot, **optional):
         intialize_bot_with_firewall_bypass(bot_class, **optional)
 
 def find_element_with_retry_base(driver, element_locator, by, refresh):
-    wait_time = 10
+    wait_time = 20
     retries = 1
     while retries <= 3:
         try:
@@ -184,9 +191,20 @@ def find_element_with_retry_base(driver, element_locator, by, refresh):
                 driver, wait_time).until(
                     ec.presence_of_element_located((by, element_locator)))
         except TimeoutException:
+            print('TimeoutException. Retrying.')
             wait_time += 5
             retries += 1
             refresh and driver.refresh()
+        except ElementClickInterceptedException:
+            print('ElementClickInterceptedException. Retrying.')
+            wait_time += 5
+            retries += 1
+        except StaleElementReferenceException:
+            print('StaleElementReferenceException. Retrying.')
+            wait_time += 5
+            retries += 1
+    print(f"Couldn't find element by {by} with locator {element_locator}")
+    return None
 
 
 def find_element_with_retry_by_id(driver, element_id, refresh=False):
@@ -195,3 +213,12 @@ def find_element_with_retry_by_id(driver, element_id, refresh=False):
 
 def find_element_with_retry_by_class(driver, element_class, refresh=False):
     return find_element_with_retry_base(driver, element_class, By.CLASS_NAME, refresh)
+
+
+def find_element_with_retry_by_xpath(driver, element_xpath, refresh=False):
+    return find_element_with_retry_base(driver, element_xpath, By.XPATH, refresh)
+
+
+def random_sleep():
+    sleep_time = random.randint(MEDIUM_TIMEOUT, HEAVY_TIMEOUT)
+    sleep(sleep_time)

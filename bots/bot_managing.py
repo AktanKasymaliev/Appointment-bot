@@ -115,6 +115,6 @@ class Bot(ABC):
             options=options)
     
         driver.maximize_window()
-        driver.implicitly_wait(10)
+        driver.implicitly_wait(20)
 
         return driver

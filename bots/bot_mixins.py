@@ -8,9 +8,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 
-from bots.support_funcs import (find_element_with_retry_by_class, find_element_with_retry_by_id,
-         is_firewall_blocked_at_the_end, is_firewall_blocked_at_the_start)
-from bots.constants import HEAVY_TIMEOUT, LIGHT_TIMEOUT, MEDIUM_TIMEOUT
+from bots.constants import HEAVY_TIMEOUT
+from bots.constants import LIGHT_TIMEOUT
+from bots.constants import MEDIUM_TIMEOUT
+from bots.support_funcs import find_element_with_retry_by_id
+from bots.support_funcs import find_element_with_retry_by_class
+from bots.support_funcs import find_element_with_retry_by_xpath
+from bots.support_funcs import is_firewall_blocked_at_the_end
+from bots.support_funcs import is_firewall_blocked_at_the_start
+from bots.support_funcs import random_sleep
 
 
 class FormFillerMixin:
@@ -43,22 +49,26 @@ class FormFillerMixin:
         :type arg: str
         """
         try:
-            self.driver.find_element(By.XPATH,
-                "//mat-option/span[contains(text(), '{}')]".format(arg)
-            ).click()
-            sleep(MEDIUM_TIMEOUT)
+            xpath = "//mat-option/span[contains(text(), '{}')]".format(arg)
+            opt = find_element_with_retry_by_xpath(self.driver, xpath)
+            if not opt:
+                raise NoSuchElementException(f"Coundn't select {arg}")
+            opt.click()
+            random_sleep()
         except NoSuchElementException:
-            raise NoSuchElementException("Visa centre not found: {}".format(arg))
-        
+            raise NoSuchElementException("Value not found: {}".format(arg))
+
 
     @is_firewall_blocked_at_the_start
     @is_firewall_blocked_at_the_end
     def choose_visa_centre(self, visa_centre: str) -> None:
+        sleep(LIGHT_TIMEOUT)
         #DropDown click
-        WebDriverWait(self.driver, 10).until(
-            ec.presence_of_element_located((By.XPATH, "//mat-form-field/div/div/div[3]"))
-        ).click()
-        sleep(MEDIUM_TIMEOUT)
+        visa_center_dropdown = find_element_with_retry_by_xpath(self.driver, "//mat-form-field/div/div/div[3]")
+        if not visa_center_dropdown:
+            raise NoSuchElementException("Visa center dropdown couldn't be found")
+        visa_center_dropdown.click()
+        random_sleep()
         self.__mat_select(visa_centre)
 
     @is_firewall_blocked_at_the_start
@@ -68,7 +78,7 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-3']"))
         ).click()
-        sleep(MEDIUM_TIMEOUT)
+        random_sleep()
         self.__mat_select(self.VISA_CATEGORY)
 
     @is_firewall_blocked_at_the_start
@@ -78,7 +88,7 @@ class FormFillerMixin:
         WebDriverWait(self.driver, 10).until(
             ec.presence_of_element_located((By.XPATH, "//div[@id='mat-select-value-5']"))
         ).click()
-        sleep(MEDIUM_TIMEOUT)
+        random_sleep()
         self.__mat_select(subcategory)
 
     @is_firewall_blocked_at_the_start
@@ -203,7 +213,8 @@ class FormFillerMixin:
         # Submitt btn
         self.driver.find_element(By.IDm, 'btnSbmt').click()
         sleep(1000)
-    
+
+
 class LoginMixin:
     """Login Form Filler"""
     
@@ -211,7 +222,24 @@ class LoginMixin:
 
     @is_firewall_blocked_at_the_start
     def __click_new_booking(self):
-        self.driver.find_element(By.XPATH, "//section/div/div[2]/button/span").click()
+        # Wait until loading spinner is gone
+        print('Checking if the spinner is gone')
+        WebDriverWait(
+            self.driver, MEDIUM_TIMEOUT
+        ).until(
+            ec.invisibility_of_element_located(
+                (By.XPATH, "//div[@class='ngx-overlay loading-foreground']")
+            )
+        )
+        print('The spinner is gone. Now trying to click on the "Start New Booking" button.')
+        # and try to find the button
+        booking_btn = find_element_with_retry_by_xpath(
+            self.driver,
+            '//section/div/div[2]/button/span',
+            refresh=True)
+        if not booking_btn:
+            raise NoSuchElementException("Couldn't find the booking button")
+        booking_btn.click()
         sleep(MEDIUM_TIMEOUT)
 
     @is_firewall_blocked_at_the_end
@@ -234,10 +262,11 @@ class LoginMixin:
                 raise NoSuchElementException("'Sign In' button couldn't be found")
             btn.click()
             sleep(HEAVY_TIMEOUT)
-            one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=True)
-            if not one_trust_btn:
-                raise NoSuchElementException("Onetrust btn container couldn't be found")
-            one_trust_btn.click()
+            one_trust_btn = find_element_with_retry_by_id(self.driver, 'onetrust-close-btn-container', refresh=False)
+            if one_trust_btn:
+                one_trust_btn.click()
+            else:
+                print("Onetrust btn container couldn't be found. Continuing.")
             self.__click_new_booking()
         except NoSuchElementException as e:
             print("Login to VFS failed")
