@@ -45,9 +45,7 @@ def upload_files(video_filename, recorder):
     s3_file_object.upload_file('/tmp/' + video_filename)
 
 
-def rerun(e):
-    print('FAILED. REASON:', e)
-    print('EXCEPTION NAME:', type(e).__name__)
+def rerun():
     print('Restarting')
     main()
 
@@ -77,18 +75,18 @@ def main():
     except WebDriverException as wde:
         # When this exception occurs, usually Chrome is not available
         # so there's no point to record anything
-        checker.driver.close()
         checker.driver.quit()
-        print('@@@@@ in WebDriverException\n')
+        print('Failed with WebDriverException: ', type(wde).__name__, ' ')
+        print('Exception details:', wde)
         upload_files(video_filename, recorder)
-        rerun(wde)
+        rerun()
 
     except Exception as e:
-        checker.driver.close()
         checker.driver.quit()
-        print('@@@@@ in Exception\n')
+        print('Failed with Exception: ', type(e).__name__, ' ')
+        print('Exception details:', e)
         upload_files(video_filename, recorder)
-        rerun(e)
+        rerun()
 
     finally:
         # upload files for debugging
