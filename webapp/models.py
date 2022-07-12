@@ -16,7 +16,7 @@ visa_centres_type = (
     ("0", "None"),
     ("Poland Visa Application Center - Ankara", "Ankara"),
     ("Poland Visa Application Center-Antalya", "Antalya"),
-    ("Poland Visa Application Center-Beyoglu", "Beyoglu"),
+    ("Poland Visa Application Center-Istanbul (Beyoglu)", "Istanbul (Beyoglu)"),
     ("Poland Visa Application Center-Gaziantep", "Gaziantep"),
     ("Poland Visa Application Center-Izmir", "Izmir"),
     ("Poland Visa Application Center-Trabzon", "Trabzon")
