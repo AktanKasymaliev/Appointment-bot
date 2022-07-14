@@ -10,7 +10,5 @@ class Command(BaseCommand):
 
         intialize_bot_with_firewall_bypass(
             VFSAppointmentCheckerBot,
-            email='dr.derekwerner5036@outlook.com',
-            password='bBc2CUQuu!4R',
             use_proxy=True,
         )
