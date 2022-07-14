@@ -1,3 +1,4 @@
+import random
 from typing import Any
 from time import sleep
 
@@ -38,10 +39,16 @@ class VFSAppointmentCheckerBot(Bot, FormFillerMixin, LoginMixin):
         "Currently No slots are available for selected category, please confirm waitlist\nTerms and Conditions"
     )
 
-    def __init__(self, email: str, password: str, use_proxy: bool = False) -> None:
+    USERS = [
+            ("dr.derekwerner5036@outlook.com", "bBc2CUQuu!4R"),
+            ("dr.derekwerner5037@outlook.com", "cBc2CUQuu!4R")
+        ]
+
+    def __init__(self, use_proxy: bool = False) -> None:
         super().__init__(use_proxy)
-        self.email = email
-        self.password = password
+        user = random.choice(self.USERS)
+        self.email = user[0]
+        self.password = user[1]
 
         self.VISA_CENTRES_AND_SUBCATEGORIES = return_visa_centre()
 
